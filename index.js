@@ -3,10 +3,8 @@ const allFuctions = require('./functions');
 const AllWhQuestions = require('./areas/AllWHQuestions');
 const Customs = require('./areas/customs');
 const Unhandled = require('./areas/unhandled');
-const Parking = require('./areas/Parking');
-const CareerService = require('./areas/CareerService');
-const FinancialAid = require('./areas/FinancialAid');
-const VolunteersService = require('./areas/VolunteersService');
+const ForgetPassword = require('./areas/ForgetPassword');
+const GVSUEmergency = require('./areas/GVSUEmergency');
 const APP_ID = process.env.APP_ID;
 
 const LaunchRequestHandler = {
@@ -167,8 +165,8 @@ const ErrorHandler = {
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     LaunchRequestHandler, 
-    Unhandled,...Customs,...Parking,
-    ...CareerService,...FinancialAid,...VolunteersService,...AllWhQuestions,
+    Unhandled,...Customs,...ForgetPassword,
+    ...GVSUEmergency,...AllWhQuestions,
     HelpIntentHandler, PauseIntentHandler, YesIntentHandler, 
     OtherBuiltinHanders, FallbackIntentHandler, SessionEndedRequestHandler,CancelAndStopIntentHandler
       )

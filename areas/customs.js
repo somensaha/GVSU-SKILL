@@ -7,7 +7,7 @@ const AthleticsNextSportsEvent = {
     }, handle(handlerInput) {
         console.log("AthleticsNextSportsEvent Handler::", handlerInput.requestEnvelope.request.intent.name);
         var intentName = handlerInput.requestEnvelope.request.intent.name;
-        var skillSlotValue = handlerInput.requestEnvelope.request.intent.slots.pvamusportsevent.value;
+        var skillSlotValue = handlerInput.requestEnvelope.request.intent.slots.GVSUsportsevent.value;
         console.log("AthleticsNextSportsEvent===============slot value==" + skillSlotValue +" Intent Name::" +intentName);
         if (typeof skillSlotValue != 'undefined' && skillSlotValue != null) {
             var skillSlotValueLower = skillSlotValue.toLowerCase().trim();
@@ -40,7 +40,7 @@ const AthleticsNextSportsEvent = {
             if (skillSlotValueLower.includes("men's") && skillSlotValueLower.includes("women's") != true) {
 
 				var params = {
-					TableName: allFuctions.PVAMUDynamicTable,
+					TableName: allFuctions.StaticTable,
 					FilterExpression: "#intent = :intent_val and contains (#answer, :answer_val) and not contains(#answer, :women_val)",
 					ExpressionAttributeNames: {
 						"#intent": 'IntentName',
@@ -56,7 +56,7 @@ const AthleticsNextSportsEvent = {
 			}
 			else { // all conditions women
 				var params = {
-					TableName: allFuctions.PVAMUDynamicTable,
+					TableName: allFuctions.StaticTable,
 					FilterExpression: "#intent = :intent_val and contains (#eventTitle, :eventTitle_val) or #eventType=:eventTitle_val",
 					ExpressionAttributeNames: {
 						"#intent": 'IntentName',
@@ -92,21 +92,33 @@ const DefinedSlotIntents = {
     canHandle(handlerInput) {
         return handlerInput.requestEnvelope.request.type === 'IntentRequest' 
             && (
-                handlerInput.requestEnvelope.request.intent.name === 'GetBuildingAddress'
-                || handlerInput.requestEnvelope.request.intent.name === 'GetPhoneNumber'
+                handlerInput.requestEnvelope.request.intent.name === 'ContactInfo'
+                || handlerInput.requestEnvelope.request.intent.name === 'GVSUApplication'
+                || handlerInput.requestEnvelope.request.intent.name === 'GVSUFindInfo'
+                || handlerInput.requestEnvelope.request.intent.name === 'GVSUPayment'
+                || handlerInput.requestEnvelope.request.intent.name === 'GVSUServices'
+                || handlerInput.requestEnvelope.request.intent.name === 'OpenCloseTime'
+                || handlerInput.requestEnvelope.request.intent.name === 'PaymentLocation'
+                || handlerInput.requestEnvelope.request.intent.name === 'LostandFound'
             );
     },
     handle(handlerInput) {
         console.log("DefinedSlotIntents Handler::", handlerInput.requestEnvelope.request.intent.name);
         var intentName = handlerInput.requestEnvelope.request.intent.name;
-        var slot = allFuctions.getSlotValue(handlerInput).toLowerCase().replace(/[^A-Z0-9]+/ig, "");
+        var contacttype = allFuctions.getDialogSlotValue(handlerInput.requestEnvelope.request.intent.slots.contacttype);
+        var buildingname = allFuctions.getDialogSlotValue(handlerInput.requestEnvelope.request.intent.slots.buildingname);
+        console.log("buildingname::",buildingname);
+        var slot = [];
+        slot.push(contacttype.toLowerCase().replace(/[^A-Z0-9]+/ig, ""));
+        slot.push(buildingname.toLowerCase().replace(/[^A-Z0-9]+/ig, ""));
+        //var slot = allFuctions.getSlotValue(handlerInput).toLowerCase().replace(/[^A-Z0-9]+/ig, "");
         // if (intentName === 'GetPhoneNumber') {
         //     slot = handlerInput.requestEnvelope.request.intent.slots.OfficePhoneNumber.value.toLowerCase().replace(/[^A-Z0-9]+/ig, "");
         //     console.log("slot for GetPhoneNumber::"+slot)
         // } else {
         //     slot = handlerInput.requestEnvelope.request.intent.slots.buildingname.value.toLowerCase().replace(/[^A-Z0-9]+/ig, "");
         // }
-        return allFuctions.DynamoDBScan(slot, handlerInput.requestEnvelope.request.intent.name, allFuctions.PVAMUStaticTable).then((data) => {
+        return allFuctions.DynamoDBScan(slot, handlerInput.requestEnvelope.request.intent.name, allFuctions.StaticTable).then((data) => {
             var obj = {
                 speechText: allFuctions.noValueReturned,
                 displayText: allFuctions.noValueReturned,
@@ -124,21 +136,21 @@ const DefinedSlotIntents = {
     }
 }
 
-const getPVAMUEventsHandler = {
+const getGVSUEventsHandler = {
     canHandle(handlerInput) {
         return handlerInput.requestEnvelope.request.type === 'IntentRequest' 
-            && handlerInput.requestEnvelope.request.intent.name === 'getPVAMUEvents';
+            && handlerInput.requestEnvelope.request.intent.name === 'getGVSUEvents';
     },
     handle(handlerInput) {
         var intentName = handlerInput.requestEnvelope.request.intent.name;
         var slot = handlerInput.requestEnvelope.request.intent.slots.eventdate.value;
-        console.log("getPVAMUEvents Handler::", intentName, slot);
-        return allFuctions.fnGetPVAMUEvents(handlerInput, intentName, slot);
+        console.log("getGVSUEvents Handler::", intentName, slot);
+        return allFuctions.fnGetGVSUEvents(handlerInput, intentName, slot);
     }
 }
 
 module.exports = [ 
     AthleticsNextSportsEvent,
-    getPVAMUEventsHandler,
+    getGVSUEventsHandler,
     DefinedSlotIntents
 ];

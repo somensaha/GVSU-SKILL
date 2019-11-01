@@ -252,15 +252,20 @@ module.exports = {
 
     getSlotValue: function(handlerInput) {
         if (handlerInput.requestEnvelope.request.intent.slots !== undefined) {
-            console.log('slottt', handlerInput.requestEnvelope.request.intent.slots);
+            console.log('slottt', JSON.stringify(handlerInput.requestEnvelope.request.intent.slots));
             var slotKeys = Object.keys(handlerInput.requestEnvelope.request.intent.slots);
             var slotObj = slotKeys.filter(item => {
                 return handlerInput.requestEnvelope.request.intent.slots[item].resolutions !== undefined;
             });
-            if (slotObj) {
-                slotObj = slotObj[0];
-            }
+            // if (slotObj) {
+            //     slotObj = slotObj[0];
+            // }
             if (slotObj !== undefined) {
+                var keys = [];
+                for(var k in slotObj) {
+                    keys.push(k);
+                    console.log('key value :: ', k.resolutions.resolutionsPerAuthority[0].values[0].value.name.toLowerCase());
+                }
                 var slotValue = handlerInput.requestEnvelope.request.intent.slots[slotObj].resolutions.resolutionsPerAuthority[0].values[0].value.name.toLowerCase();    
             } else {
                 var slotValue = null;                
@@ -333,22 +338,35 @@ module.exports = {
                     console.log('stringSimilarityfn err =>' + JSON.stringify(err))
                     resolve(null);                    
 				}
-				var slots = [];
+                var slots = [];
+                
 				if(data) {
 					data.Items.forEach(function(itemdata) {
-						slots.push(itemdata.Slot);
+                        //console.log("itemslot",itemdata.Slot.values);
+                        //console.log("itemslot",JSON.stringify(itemdata.Slot.values));
+                        const arraySlot = itemdata.Slot.values;
+                        //console.log('array slottt', arraySlot);
+                        if (arraySlot.length !== 0) {
+                            arraySlot.forEach(std => {
+                                if (std.trim() !== '') {
+                                    slots.push(std);
+                                }
+                            })
+                        }
 					});
                     if (slots.length === 0) {
                         resolve(null);
                     }
-					// Levenstein best match result
+                    // Levenstein best match result
+                    //console.log('slotname=====>', slotName);
+                   // console.log('slots arrayyy', slots);
 					var matches = stringSimilarity.findBestMatch(slotName, slots);
 					console.log('stringSimilarityfn best match slot ==> ' + slotName + '====with dynamodb slots ==>' + JSON.stringify(slots) + ' result ==> ' + JSON.stringify(matches));
                     if (matches.bestMatch.rating < 0.5) {
                         resolve(null);
                     } else {
                         var bestMatched = data.Items.filter(item => {
-                            return item.Slot == matches.bestMatch.target;
+                            return item.Slot.values.includes(matches.bestMatch.target)
                         });
                         console.log('stringSimilarityfn best match answer ======', bestMatched[0].Answer);
                         resolve(bestMatched[0].Answer);
@@ -369,6 +387,7 @@ module.exports = {
 				ExpressionAttributeValues: { ":title_val": intentName }
             };
             if (slot !== null) {
+                console.log("slotarray::",slot);
                 params = {
                     TableName: tableName,
                     FilterExpression: "#slot = :slotval and #intent = :intentval",
