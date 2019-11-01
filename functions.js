@@ -17,7 +17,7 @@ module.exports = {
     // DynamicTable: 'AskPVAMUDynamic',
     // PVAMUDepartmentMaster:'AskPVAMUDeptMaster',
     
-    defaultImage: 'https://pvamu-prod.s3.amazonaws.com/pvamu-logo-large1.png',      //change
+    defaultImage: 'https://gvsu-skill.s3.amazonaws.com/logo.png',      //change
 
     remindersArray: [
         'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Other process. ',
