@@ -118,7 +118,7 @@ const DefinedSlotIntents = {
         // } else {
         //     slot = handlerInput.requestEnvelope.request.intent.slots.buildingname.value.toLowerCase().replace(/[^A-Z0-9]+/ig, "");
         // }
-        return allFuctions.DynamoDBScan(slot, handlerInput.requestEnvelope.request.intent.name, allFuctions.StaticTable).then((data) => {
+        return allFuctions.DynamoDBScan(slot, intentName, allFuctions.StaticTable).then((data) => {
             var obj = {
                 speechText: allFuctions.noValueReturned,
                 displayText: allFuctions.noValueReturned,

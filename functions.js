@@ -388,15 +388,28 @@ module.exports = {
             };
             if (slot !== null) {
                 console.log("slotarray::",slot);
-                params = {
-                    TableName: tableName,
-                    FilterExpression: "#slot = :slotval and #intent = :intentval",
-                    ExpressionAttributeNames: {
-                        "#slot": "Slot",
-                        "#intent":"IntentName"
-                    },
-                    ExpressionAttributeValues: { ":slotval": slot ,":intentval":intentName}
+                let FilterExpression = 'IntentName = :IntentName';
+                let ExpressionAttributeValues = {':IntentName': 'OpenCloseTime'};
+                slots.forEach((slot, i) => {
+                    if (slot) {
+                        FilterExpression = FilterExpression + ' AND contains(Slot,:Slot'+i+')';
+                        ExpressionAttributeValues[':Slot'+i] = slot
+                    }
+                });
+                var params = {
+                    TableName: tableName, 
+                    FilterExpression: FilterExpression, 
+                    ExpressionAttributeValues: ExpressionAttributeValues
                 };
+                // params = {
+                //     TableName: tableName,
+                //     FilterExpression: "#slot = :slotval and #intent = :intentval",
+                //     ExpressionAttributeNames: {
+                //         "#slot": "Slot",
+                //         "#intent":"IntentName"
+                //     },
+                //     ExpressionAttributeValues: { ":slotval": slot ,":intentval":intentName}
+                // };
             }
             
 			// Scan DynamoDB
