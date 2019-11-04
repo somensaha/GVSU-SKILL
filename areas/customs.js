@@ -93,13 +93,6 @@ const DefinedSlotIntents = {
         return handlerInput.requestEnvelope.request.type === 'IntentRequest' 
             && (
                 handlerInput.requestEnvelope.request.intent.name === 'ContactInfo'
-                || handlerInput.requestEnvelope.request.intent.name === 'GVSUApplication'
-                || handlerInput.requestEnvelope.request.intent.name === 'GVSUFindInfo'
-                || handlerInput.requestEnvelope.request.intent.name === 'GVSUPayment'
-                || handlerInput.requestEnvelope.request.intent.name === 'GVSUServices'
-                || handlerInput.requestEnvelope.request.intent.name === 'OpenCloseTime'
-                || handlerInput.requestEnvelope.request.intent.name === 'PaymentLocation'
-                || handlerInput.requestEnvelope.request.intent.name === 'LostandFound'
             );
     },
     handle(handlerInput) {

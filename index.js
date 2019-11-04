@@ -1,10 +1,17 @@
 const Alexa = require('ask-sdk');
 const allFuctions = require('./functions');
 const AllWhQuestions = require('./areas/AllWHQuestions');
-const Customs = require('./areas/customs');
+const IntentsWithMultipleSlots = require('./areas/IntentsWithMultipleSlots');
 const Unhandled = require('./areas/unhandled');
-const ForgetPassword = require('./areas/ForgetPassword');
 const GVSUEmergency = require('./areas/GVSUEmergency');
+const GVSUServices = require('./areas/GVSUServices');
+const GVSUApplication = require('./areas/GVSUApplication');
+const GVSUPayment = require('./areas/GVSUPayment');
+const GVSUFindInfo = require('./areas/GVSUFindInfo');
+const OpenCloseTime = require('./areas/OpenCloseTime');
+const PaymentLocation = require('./areas/PaymentLocation');
+const LostandFound = require('./areas/LostandFound');
+const AllStaticIntents = require('./areas/AllStaticIntents');
 const APP_ID = process.env.APP_ID;
 
 const LaunchRequestHandler = {
@@ -165,8 +172,10 @@ const ErrorHandler = {
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     LaunchRequestHandler, 
-    Unhandled,...Customs,...ForgetPassword,
-    ...GVSUEmergency,...AllWhQuestions,
+    Unhandled,...AllStaticIntents,
+    ...IntentsWithMultipleSlots,...GVSUEmergency,...GVSUServices,...GVSUApplication,
+    ...GVSUFindInfo,...GVSUPayment,...OpenCloseTime,
+    ...PaymentLocation,...LostandFound,...AllWhQuestions,
     HelpIntentHandler, PauseIntentHandler, YesIntentHandler, 
     OtherBuiltinHanders, FallbackIntentHandler, SessionEndedRequestHandler,CancelAndStopIntentHandler
       )
