@@ -14,6 +14,7 @@
     "dateformat": "^3.0.3",
     "fuse.js": "^3.4.5",
     "request": "^2.88.0",
+    "stopword": "^0.3.4",
     "string-similarity": "^3.0.0",
     "string-strip-html": "^3.5.0"
   }

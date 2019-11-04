@@ -8,6 +8,7 @@ const dataJson = require('./apl/data.json');
 // const studentCategoriesAPI = 'http://54.174.19.182:8081/students/getStudentDetails';
 const googleAPIKey = process.env.googleAPIKey;
 const stringSimilarity = require('string-similarity');
+const {removeStopwords} = require('stopword');
 
 
 module.exports = {
@@ -721,5 +722,77 @@ module.exports = {
                 }
             }
         });
+    },
+
+    suggestionsFromJson : function(params) {
+        // console.log('suggestionsFromJson', JSON.stringify(params));
+        let slot = params.slot;
+        let shuffle = params.shuffle;
+        let utterance = params.utterance;
+        return new Promise((resolve, reject) => {
+            request(process.env.suggestionJsonURL, function(error, response, body){
+                if (error) {
+                    console.log('suggestion request', error);
+                    resolve(null);
+                }
+                // console.log('suggestionJSON', typeof body, body);
+                let suggestions = JSON.parse(body).suggestions;
+                if (slot) {
+                    let suggestedSlotObj = [];
+                    suggestions.forEach(obj => {
+                        if (obj.slotname) {
+                            let slotArr = obj.slotname.map(k => k.replace(/\s/g,'').toLowerCase());
+                            // console.log('slotArr', slotArr);
+                            if (indexSlotPos = slotArr.includes(slot.replace(/\s/g,'').toLowerCase())) {
+                                let returnSlots = obj.slotname.splice(indexSlotPos, 1);
+                                suggestedSlotObj = [...suggestedSlotObj,...returnSlots];
+                            }
+                        }
+                    });
+                    if (suggestedSlotObj.length > 2 && shuffle) {
+                        suggestedSlotObj = suggestedSlotObj.sort(function() {return 0.5 - Math.random()})
+                    }
+                    console.log('suggested slots are::', suggestedSlotObj);
+                    resolve(suggestedSlotObj);
+                } else if (utterance) {
+                    let jsonutterances = suggestions.map(a => a.uttr);
+                    // console.log('jsonutterances', jsonutterances);
+                    let filteredStopWordQueryText = removeStopwords(utterance.split(' ')).join(' ');
+                    let filteredSuggestions = stringSimilarity.findBestMatch(filteredStopWordQueryText, jsonutterances);
+                    filteredSuggestions = filteredSuggestions.ratings.sort((a,b) => b.rating - a.rating);
+                    // console.log('filteredSuggestions', filteredSuggestions);
+                    filteredSuggestions = filteredSuggestions.map(a => a.target);
+                    resolve(filteredSuggestions);
+                }
+                resolve(null);
+            });
+        });
+    },
+    
+    contactInfodynamodbScan : function(params) {
+        console.log('DynamoDB Scan Params::', JSON.stringify(params));
+        return new Promise((res, rej) => {
+            var docClient = new AWS.DynamoDB.DocumentClient();
+            docClient.scan(params, onScan);
+            function onScan(err, data) {
+                if (err) {
+                    console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+                    res(null);
+                } else {
+                    console.log("Scan succeeded." + JSON.stringify(data));
+                    var itemdataFinal = null;
+                    // continue scanning if we have more items
+                    if (typeof data.LastEvaluatedKey != "undefined" && data.Count === 0) {
+                        console.log("Scanning for more...");
+                        params.ExclusiveStartKey = data.LastEvaluatedKey;
+                        docClient.scan(params, onScan);
+                    } else {
+                        // console.log('Returned selected scanned data', data.Items);
+                        res(data.Items);
+                    }
+                }
+            }
+        });
     }
+
 }
