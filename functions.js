@@ -262,11 +262,6 @@ module.exports = {
             //     slotObj = slotObj[0];
             // }
             if (slotObj !== undefined) {
-                var keys = [];
-                for(var k in slotObj) {
-                    keys.push(k);
-                    console.log('key value :: ', k.resolutions.resolutionsPerAuthority[0].values[0].value.name.toLowerCase());
-                }
                 var slotValue = handlerInput.requestEnvelope.request.intent.slots[slotObj].resolutions.resolutionsPerAuthority[0].values[0].value.name.toLowerCase();    
             } else {
                 var slotValue = null;                
@@ -302,26 +297,30 @@ module.exports = {
         });
     },
 
-    slotForAllWhatIs: async function(handlerInput, slotName = null) {
-        var ans = await this.searchQuery(slotName);
-        var obj = null;
-        if (ans === null) {
-            obj = {
-                speechText: this.noValueReturned,
-                displayText: this.noValueReturned,
-                repromptSpeechText: this.listenspeech
+    slotForAllWhatIs: function(handlerInput, slotName = null) {
+        console.log('slotForAllWhatIs', slotName);
+        return this.searchQuery(slotName,handlerInput).then((ans) => {
+            var obj = null;
+            if (ans === null) {
+                obj = {
+                    speechText: this.noValueReturned,
+                    displayText: this.noValueReturned,
+                    repromptSpeechText: this.listenspeech
+                }
+            } else {
+                obj = {
+                    speechText: ans + ' What else would you like to know?',
+                    displayText: ans + ' What else would you like to know?',
+                    repromptSpeechText: this.listenspeech
+                }
             }
-        } else {
-            obj = {
-                speechText: ans + ' What else would you like to know?',
-                displayText: ans + ' What else would you like to know?',
-                repromptSpeechText: this.listenspeech
-            }
-        }
-        return this.formSpeech(handlerInput, obj);
+            return this.formSpeech(handlerInput, obj);
+        });
+        
     },
 
-    searchQuery: function(slotName = null) {
+    searchQuery: function(slotName = null,handlerInput) {
+        console.log("intent name in search query::",handlerInput.requestEnvelope.request.intent);
         return new Promise((resolve, reject) => {
 			var params = {
 				TableName: this.StaticTable,
@@ -329,8 +328,10 @@ module.exports = {
 				ExpressionAttributeNames: {
 					  "#title": 'IntentName',
 				},
-				ExpressionAttributeValues: { ":title_val": 'AllWHQuestions' }
-			}
+				ExpressionAttributeValues: { ":title_val": handlerInput.requestEnvelope.request.intent.name}
+            }
+            
+            console.log('searchQuery', params);
 
 			// Scan DynamoDB
 			var docClient = new AWS.DynamoDB.DocumentClient();
@@ -342,8 +343,9 @@ module.exports = {
                 var slots = [];
                 
 				if(data) {
+                    console.log('data.Items', data.Items);
 					data.Items.forEach(function(itemdata) {
-                        //console.log("itemslot",itemdata.Slot.values);
+                        console.log("itemslot",itemdata.Slot.values);
                         //console.log("itemslot",JSON.stringify(itemdata.Slot.values));
                         const arraySlot = itemdata.Slot.values;
                         //console.log('array slottt', arraySlot);
@@ -359,8 +361,8 @@ module.exports = {
                         resolve(null);
                     }
                     // Levenstein best match result
-                    //console.log('slotname=====>', slotName);
-                   // console.log('slots arrayyy', slots);
+                    console.log('slotname=====>', slotName);
+                    console.log('slots arrayyy', slots);
 					var matches = stringSimilarity.findBestMatch(slotName, slots);
 					console.log('stringSimilarityfn best match slot ==> ' + slotName + '====with dynamodb slots ==>' + JSON.stringify(slots) + ' result ==> ' + JSON.stringify(matches));
                     if (matches.bestMatch.rating < 0.5) {

@@ -8,7 +8,7 @@ const AllWHQuestions = {
             && handlerInput.requestEnvelope.request.intent.name === 'AllWHQuestions';
     },
     handle(handlerInput) {
-        console.log("AllWHQuestions Handler:: ", handlerInput);
+        console.log("AllWHQuestionsssssss Handler:: ", handlerInput);
         const currentIntent = handlerInput.requestEnvelope.request.intent;
         // var serviceType = handlerInput.requestEnvelope.request.intent.slots.searchphrase;
         var serviceType = allFuctions.getSlotValue(handlerInput);
