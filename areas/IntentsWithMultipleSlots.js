@@ -10,19 +10,9 @@ const ContactInfo = {
         var intentName = handlerInput.requestEnvelope.request.intent.name;
         var contacttype = allFuctions.getDialogSlotValue(handlerInput.requestEnvelope.request.intent.slots.contacttype);
         var buildingname = allFuctions.getDialogSlotValue(handlerInput.requestEnvelope.request.intent.slots.buildingname);
-        console.log("slots in contact info are::",name, contacttype);
-
-
-
+        console.log("slots in contact info are::",buildingname, contacttype);
         
         let obj = null;
-
-        // array to decide dynamically what contact type to keep and show
-        const  contacttypeArr = new Map([
-            ["phone","telephone number"],
-            ["email address","email address"],
-            ["address","address"]
-        ]);
 
         try {
             var params = {
@@ -30,15 +20,15 @@ const ContactInfo = {
             };
             let speechText = '';
 
-            if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'DENIED') {
-                obj = {
-                    speechText: allFuctions.YesPrompt,
-                    displayText: allFuctions.YesPrompt,
-                    repromptSpeechText: allFuctions.listenspeech,
-                    sessionEnd: false
-                }
-                return allFuctions.formSpeech(handlerInput, obj);
-            }
+            // if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'DENIED') {
+            //     obj = {
+            //         speechText: allFuctions.YesPrompt,
+            //         displayText: allFuctions.YesPrompt,
+            //         repromptSpeechText: allFuctions.listenspeech,
+            //         sessionEnd: false
+            //     }
+            //     return allFuctions.formSpeech(handlerInput, obj);
+            // }
 
             if (buildingname) {
                 let slots = [buildingname, contacttype];
@@ -49,7 +39,7 @@ const ContactInfo = {
                 slots.forEach((slot, i) => {
                     if (slot) {
                         FilterExpression = FilterExpression + ' AND contains(Slot,:Slot'+i+')';
-                        ExpressionAttributeValues[':Slot'+i] = slot.replace(/\s/g,'').toLowerCase();
+                        ExpressionAttributeValues[':Slot'+i] = slot.replace(/[^A-Z0-9]+/ig,'').toLowerCase();
                     }
                 });
                 var dynamodbScanParams = {TableName: "AskGVSUStatic", FilterExpression: FilterExpression, ExpressionAttributeValues: ExpressionAttributeValues};
@@ -66,8 +56,8 @@ const ContactInfo = {
                             return allFuctions.formSpeech(handlerInput, obj);
                         } else {
                             if (buildingname) {
-                                return allFuctions.suggestionsFromJson({shuffle: true, slot: buildingname}).then((suggestionslot) => {
-                                    var speechText = 'Are you looking for the '+buildingname+suggestionslot.join(' or ')+'?';
+                                return allFuctions.suggestionsFromJson({shuffle: true, slot: buildingname, intent:intentName}).then((suggestionslot) => {
+                                    var speechText = 'I can assist you with the '+ suggestionslot.join(' or ') +  '. Which one would you like to know?';
                                     obj = {
                                         speechText: speechText,
                                         displayStandardCardText: speechText,
@@ -99,7 +89,7 @@ const ContactInfo = {
                     return allFuctions.formSpeech(handlerInput, obj);       
                 })
             } else {
-                speechText = 'I could not get person name. Please say again.'
+                speechText = 'Whose contact details or which office information you are looking for?'
                 obj = {
                     speechText: speechText,
                     displayStandardCardText: speechText,
@@ -119,39 +109,93 @@ const OpenCloseTime = {
         return handlerInput.requestEnvelope.request.type === 'IntentRequest' 
             && handlerInput.requestEnvelope.request.intent.name === 'OpenCloseTime'
     },
-
     handle(handlerInput) {
         console.log("DefinedSlotIntents Handler::", handlerInput.requestEnvelope.request.intent.name);
         var intentName = handlerInput.requestEnvelope.request.intent.name;
-        var contacttype = allFuctions.getDialogSlotValue(handlerInput.requestEnvelope.request.intent.slots.openclose);
+        var openclosetype = allFuctions.getDialogSlotValue(handlerInput.requestEnvelope.request.intent.slots.openclose);
         var buildingname = allFuctions.getDialogSlotValue(handlerInput.requestEnvelope.request.intent.slots.buildingname);
-        console.log("buildingname::",buildingname);
-        console.log("openclose::",openclose);
-        var slot = [];
-        slot.push(contacttype.toLowerCase().replace(/[^A-Z0-9]+/ig, ""));
-        slot.push(buildingname.toLowerCase().replace(/[^A-Z0-9]+/ig, ""));
-        //var slot = allFuctions.getSlotValue(handlerInput).toLowerCase().replace(/[^A-Z0-9]+/ig, "");
-        // if (intentName === 'GetPhoneNumber') {
-        //     slot = handlerInput.requestEnvelope.request.intent.slots.OfficePhoneNumber.value.toLowerCase().replace(/[^A-Z0-9]+/ig, "");
-        //     console.log("slot for GetPhoneNumber::"+slot)
-        // } else {
-        //     slot = handlerInput.requestEnvelope.request.intent.slots.buildingname.value.toLowerCase().replace(/[^A-Z0-9]+/ig, "");
-        // }
-        return allFuctions.DynamoDBScan(slot, intentName, allFuctions.StaticTable).then((data) => {
-            var obj = {
-                speechText: allFuctions.noValueReturned,
-                displayText: allFuctions.noValueReturned,
-                repromptSpeechText: allFuctions.listenspeech
+        console.log("slots in openclose time are::",buildingname, openclosetype);
+        
+        let obj = null;
+
+
+        try {
+            var params = {
+                TableName : "AskGVSUStatic"
             };
-            if(data !== null) {
+            let speechText = '';
+
+            if (buildingname) {
+                let slots = [buildingname, openclosetype];
+                let convJSON = {};
+                console.log('Slots are::', JSON.stringify(slots));
+                let FilterExpression = 'IntentName = :IntentName';
+                let ExpressionAttributeValues = {':IntentName': 'OpenCloseTime'};
+                slots.forEach((slot, i) => {
+                    if (slot) {
+                        FilterExpression = FilterExpression + ' AND contains(Slot,:Slot'+i+')';
+                        ExpressionAttributeValues[':Slot'+i] = slot.replace(/[^A-Z0-9]+/ig,'').toLowerCase();
+                    }
+                });
+                var dynamodbScanParams = {TableName: "AskGVSUStatic", FilterExpression: FilterExpression, ExpressionAttributeValues: ExpressionAttributeValues};
+                return allFuctions.contactInfodynamodbScan(dynamodbScanParams).then((res) => {
+                    if (res.length !== 0) {
+                        if (res.length === 1) {
+                            var speechText = res[0].Answer;
+                            obj = {
+                                speechText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                displayText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                repromptSpeechText: allFuctions.listenspeech,
+                                sessionEnd: false
+                            }
+                            return allFuctions.formSpeech(handlerInput, obj);
+                        } else {
+                            if (buildingname) {
+                                return allFuctions.suggestionsFromJson({shuffle: true, slot: buildingname, intent:intentName}).then((suggestionslot) => {
+                                    var speechText = 'I can assist you with the '+ suggestionslot.join(' or ') +  '. Which one would you like to know?';
+                                    obj = {
+                                        speechText: speechText,
+                                        displayStandardCardText: speechText,
+                                        addElicitSlotDirective: 'openclosetype'
+                                    }
+                                    return allFuctions.formSpeech(handlerInput, obj);
+                                });
+                            }
+                        }
+                    } else {
+                        var speechText = 'I could not find any timing details.';
+                            obj = {
+                                speechText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                displayText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                repromptSpeechText: allFuctions.listenspeech,
+                                sessionEnd: false
+                            }
+                        return allFuctions.formSpeech(handlerInput, obj);                        
+                    }
+                }).catch((err) => {
+                    console.log('ContactInfo Error::', err);
+                    var speechText = 'I could not find any timing details.';
+                    obj = {
+                        speechText: speechText + ' ' + allFuctions.repromptSpeechText,
+                        displayText: speechText + ' ' + allFuctions.repromptSpeechText,
+                        repromptSpeechText: allFuctions.listenspeech,
+                        sessionEnd: false
+                    }
+                    return allFuctions.formSpeech(handlerInput, obj);       
+                })
+            } else {
+                speechText = 'Which office open or close timing details you are looking for?'
                 obj = {
-                    speechText: data.Answer + ' What else would you like to know?',
-                    displayText: data.Answer + ' What else would you like to know?',
-                    repromptSpeechText: allFuctions.listenspeech
+                    speechText: speechText,
+                    displayStandardCardText: speechText,
+                    addElicitSlotDirective: 'buildingname'                        
                 }
+                return allFuctions.formSpeech(handlerInput, obj);
             }
-            return allFuctions.formSpeech(handlerInput, obj);
-        });
+        } catch (error) {
+             console.log(error);   
+        }
+
     }
 }
 

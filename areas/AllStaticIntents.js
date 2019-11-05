@@ -8,6 +8,9 @@ const AllStaticIntents = {
             handlerInput.requestEnvelope.request.intent.name === 'ForgetPassword'
             || handlerInput.requestEnvelope.request.intent.name === 'GVSUEmergency'
             || handlerInput.requestEnvelope.request.intent.name === 'GVSUPrinting'
+            || handlerInput.requestEnvelope.request.intent.name === 'GVSUEmergencyAbroad'
+            || handlerInput.requestEnvelope.request.intent.name === 'GVSUParking'
+            || handlerInput.requestEnvelope.request.intent.name === 'ComputerIssues'
         );
     },
     handle(handlerInput) {

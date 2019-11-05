@@ -21,19 +21,17 @@ module.exports = {
     defaultImage: 'https://gvsu-skill.s3.amazonaws.com/logo.png',      //change
 
     remindersArray: [
-        'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Other process. ',
-        // 'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Health and Counseling. ',
-        // 'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Financial Aid.',
-        // 'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Career Services.',
-        // 'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Registrar.',
-        // 'Thank you for using My Laker, Just a reminder, don\'t forget to ask about International.',
-        // 'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Student Conduct.',
-        // 'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Volunteers Services.',
-        // 'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Student Engagement.',
-        // 'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Housing.',
-        // 'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Dean of Students.',
-        // 'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Library.',
-        // 'Thank you for using My Laker, Just a reminder, don\'t forget to ask about Student Employment. '
+        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about University Counseling Services. ',
+        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Financial Aid. ',
+        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Housing.',
+        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Registrar.',
+        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Information Technology Services.',
+        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Parent Orientation.',
+        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Career Services.',
+        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Police Department.',
+        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Library.',
+        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Admissions.',
+        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Student Employment. '
     ],
 
     daysArray: ['','monday','tuesday','wednesday','thursday','friday','saturday','sunday'],
@@ -41,13 +39,13 @@ module.exports = {
     repromptSpeechText: 'What else would you like to know?',
     noValueReturned: "Sorry I couldn't find any information on that or maybe I misunderstood you. Please try again.",
     listenspeech: 'Is there anything else I can help you with?',
-	helpspeech: 'My Laker is designed to answer your university questions. How may I help you?',
+	helpspeech: 'Ask myLaker is designed to answer your university questions. How may I help you?',
     YesPrompt: ' What would you like to know?',
     needtoLinkYourAccount: 'To access this service you need to link your account with Alexa.',
     optOutCategory: 'You have opted out of this category of questions.',
-    welcomeMessage: "Welcome to the Grand Vally State University My Laker Skill. What would you like to know?",
+    welcomeMessage: "Welcome to the Grand Vally State University Ask myLaker Skill. What would you like to know?",
     signUpMessage: 'You have not registered with GVSU portal, Please sign up',
-    semilinkWelcomeMessage: "Welcome to the My Laker Skill. ",
+    semilinkWelcomeMessage: "Welcome to the Ask myLaker Skill. ",
 	
 
     stripSpeakOptions: {
@@ -693,7 +691,11 @@ module.exports = {
 
     getDialogSlotValue: function(slotParam) {
         if (slotParam.value) {
-            return slotParam.resolutions.resolutionsPerAuthority[0].values[0].value.name;
+            if (slotParam.resolutions.resolutionsPerAuthority[0].values) {
+                return slotParam.resolutions.resolutionsPerAuthority[0].values[0].value.name;
+            } else {
+                return slotParam.value;
+            }
         } else {
             return null;
         }
@@ -731,6 +733,7 @@ module.exports = {
         let slot = params.slot;
         let shuffle = params.shuffle;
         let utterance = params.utterance;
+        let intent = params.intent;
         return new Promise((resolve, reject) => {
             request(process.env.suggestionJsonURL, function(error, response, body){
                 if (error) {
@@ -742,10 +745,10 @@ module.exports = {
                 if (slot) {
                     let suggestedSlotObj = [];
                     suggestions.forEach(obj => {
-                        if (obj.slotname) {
-                            let slotArr = obj.slotname.map(k => k.replace(/\s/g,'').toLowerCase());
+                        if (obj.slotname && obj.intent === intent) {
+                            let slotArr = obj.slotname.map(k => k.replace(/[^A-Z0-9]+/ig,'').toLowerCase());
                             // console.log('slotArr', slotArr);
-                            if (indexSlotPos = slotArr.includes(slot.replace(/\s/g,'').toLowerCase())) {
+                            if (indexSlotPos = slotArr.includes(slot.replace(/[^A-Z0-9]+/ig,'').toLowerCase())) {
                                 let returnSlots = obj.slotname.splice(indexSlotPos, 1);
                                 suggestedSlotObj = [...suggestedSlotObj,...returnSlots];
                             }
@@ -757,14 +760,25 @@ module.exports = {
                     console.log('suggested slots are::', suggestedSlotObj);
                     resolve(suggestedSlotObj);
                 } else if (utterance) {
-                    let jsonutterances = suggestions.map(a => a.uttr);
+                    let jsonutterances = suggestions.map(a => a.uttr.replace(/[^A-Za-z0-9]/gm, ''));
                     // console.log('jsonutterances', jsonutterances);
-                    let filteredStopWordQueryText = removeStopwords(utterance.split(' ')).join(' ');
-                    let filteredSuggestions = stringSimilarity.findBestMatch(filteredStopWordQueryText, jsonutterances);
+                    let filteredStopWordQueryText = utterance.replace(/[^A-Za-z0-9]/gm, '');
+                    // let filteredStopWordQueryText = removeStopwords(utterance.split(' ')).join(' ');
+                    // console.log('filteredStopWordQueryText');
+                    let filteredSuggestions = findBestMatch(filteredStopWordQueryText, jsonutterances);
                     filteredSuggestions = filteredSuggestions.ratings.sort((a,b) => b.rating - a.rating);
-                    // console.log('filteredSuggestions', filteredSuggestions);
+                    // console.log('filteredSuggestions', JSON.stringify(filteredSuggestions));
                     filteredSuggestions = filteredSuggestions.map(a => a.target);
-                    resolve(filteredSuggestions);
+                    let finalSugg = [];
+                    filteredSuggestions.forEach(sug => {
+                        if (matchSug = suggestions.find(k => k.uttr.replace(/[^A-Za-z0-9]/gm, '') === sug)) {
+                            finalSugg.push(matchSug.uttr);
+                        }
+                    })
+                    // let formattedFilteredSugg = suggestions.filter(k => k.uttr.replace(/[^A-Za-z0-9]/gm, ''));
+                    // formattedFilteredSugg = formattedFilteredSugg.map(k => k.uttr);
+                    // console.log('formattedFilteredSugg', finalSugg);
+                    resolve(finalSugg);
                 }
                 resolve(null);
             });

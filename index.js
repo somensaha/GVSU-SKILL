@@ -3,8 +3,8 @@ const allFuctions = require('./functions');
 const AllWhQuestions = require('./areas/AllWHQuestions');
 const IntentsWithMultipleSlots = require('./areas/IntentsWithMultipleSlots');
 const Unhandled = require('./areas/unhandled');
-const GVSUEmergency = require('./areas/GVSUEmergency');
 const GVSUServices = require('./areas/GVSUServices');
+const IntentWithCategories = require('./areas/IntentWithCategories');
 const GVSUApplication = require('./areas/GVSUApplication');
 const GVSUPayment = require('./areas/GVSUPayment');
 const GVSUFindInfo = require('./areas/GVSUFindInfo');
@@ -173,8 +173,8 @@ exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     LaunchRequestHandler, 
     Unhandled,...AllStaticIntents,
-    ...IntentsWithMultipleSlots,...GVSUEmergency,...GVSUServices,...GVSUApplication,
-    ...GVSUFindInfo,...GVSUPayment,...OpenCloseTime,
+    ...IntentsWithMultipleSlots,...GVSUServices,...GVSUApplication,
+    ...GVSUFindInfo,...GVSUPayment,...IntentWithCategories,...OpenCloseTime,
     ...PaymentLocation,...LostandFound,...AllWhQuestions,
     HelpIntentHandler, PauseIntentHandler, YesIntentHandler, 
     OtherBuiltinHanders, FallbackIntentHandler, SessionEndedRequestHandler,CancelAndStopIntentHandler
