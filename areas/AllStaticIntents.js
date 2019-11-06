@@ -11,8 +11,8 @@ const AllStaticIntents = {
             || handlerInput.requestEnvelope.request.intent.name === 'GVSUEmergencyAbroad'
             || handlerInput.requestEnvelope.request.intent.name === 'GVSUParking'
             || handlerInput.requestEnvelope.request.intent.name === 'ComputerIssues'
-            || handlerInput.requestEnvelope.request.intent.name === 'FinncialAidApplicationDeadline'
-            || handlerInput.requestEnvelope.request.intent.name === 'FinncialAidApplicationTime'
+            || handlerInput.requestEnvelope.request.intent.name === 'FinancialAidApplicationDeadline'
+            || handlerInput.requestEnvelope.request.intent.name === 'FinancialAidApplicationTime'
         );
     },
     handle(handlerInput) {
