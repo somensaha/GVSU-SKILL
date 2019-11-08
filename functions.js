@@ -21,17 +21,17 @@ module.exports = {
     defaultImage: 'https://gvsu-skill.s3.amazonaws.com/logo.png',      //change
 
     remindersArray: [
-        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about University Counseling Services. ',
-        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Financial Aid. ',
-        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Housing.',
-        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Registrar.',
-        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Information Technology Services.',
-        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Parent Orientation.',
-        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Career Services.',
-        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Police Department.',
-        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Library.',
-        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Admissions.',
-        'Thank you for using Ask myLaker, Just a reminder, don\'t forget to ask about Student Employment. '
+        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about University Counseling Services. ',
+        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Financial Aid. ',
+        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Housing.',
+        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Registrar.',
+        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Information Technology Services.',
+        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Parent Orientation.',
+        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Career Services.',
+        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Police Department.',
+        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Library.',
+        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Admissions.',
+        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Student Employment. '
     ],
 
     daysArray: ['','monday','tuesday','wednesday','thursday','friday','saturday','sunday'],
@@ -39,13 +39,13 @@ module.exports = {
     repromptSpeechText: 'What else would you like to know?',
     noValueReturned: "Sorry I couldn't find any information on that or maybe I misunderstood you. Please try again.",
     listenspeech: 'Is there anything else I can help you with?',
-	helpspeech: 'Ask myLaker is designed to answer your university questions. How may I help you?',
+	helpspeech: 'myLaker is designed to answer your university questions. How may I help you?',
     YesPrompt: ' What would you like to know?',
     needtoLinkYourAccount: 'To access this service you need to link your account with Alexa.',
     optOutCategory: 'You have opted out of this category of questions.',
-    welcomeMessage: "Welcome to the Grand Vally State University Ask myLaker Skill. What would you like to know?",
+    welcomeMessage: "Welcome to the Grand Valley State University myLaker Skill. What would you like to know?",
     signUpMessage: 'You have not registered with GVSU portal, Please sign up',
-    semilinkWelcomeMessage: "Welcome to the Ask myLaker Skill. ",
+    semilinkWelcomeMessage: "Welcome to the myLaker Skill. ",
 	
 
     stripSpeakOptions: {
@@ -747,10 +747,30 @@ module.exports = {
                     suggestions.forEach(obj => {
                         if (obj.slotname && obj.intent === intent) {
                             let slotArr = obj.slotname.map(k => k.replace(/[^A-Z0-9]+/ig,'').toLowerCase());
+    
+                            
+    
                             // console.log('slotArr', slotArr);
-                            if (indexSlotPos = slotArr.includes(slot.replace(/[^A-Z0-9]+/ig,'').toLowerCase())) {
-                                let returnSlots = obj.slotname.splice(indexSlotPos, 1);
-                                suggestedSlotObj = [...suggestedSlotObj,...returnSlots];
+                            if (slotArr.includes(slot.replace(/[^A-Z0-9]+/ig,''))) {
+                                let slottarr = obj.slotname.filter((k) => {
+                                    if (k.replace(/[^A-Z0-9]+/ig,'').toLowerCase() !== slot.replace(/[^A-Z0-9]+/ig,'').toLowerCase()) {
+                                        return k;
+                                    }
+                                })
+                                suggestedSlotObj = [...suggestedSlotObj,...slottarr];
+                            //     // let returnSlots = slotArr.filter((k) => {
+                            //     //     if (k !== slot.replace(/[^A-Z0-9]+/ig,'')) {
+                            //     //         return k;
+                            //     //     }
+                            //     // });
+    
+                            //     let slotPos = slotArr.indexOf(slot.replace(/[^A-Z0-9]+/ig,''));
+                            //     let returnSlots = obj.slotname.splice(slotPos, 1);
+    
+    
+                            //     // let returnSlots = obj.slotname.splice(indexSlotPos, 1);
+                            //     // console.log(returnSlots, indexSlotPos);
+                            //     suggestedSlotObj = [...suggestedSlotObj,...returnSlots];
                             }
                         }
                     });
@@ -760,18 +780,18 @@ module.exports = {
                     console.log('suggested slots are::', suggestedSlotObj);
                     resolve(suggestedSlotObj);
                 } else if (utterance) {
-                    let jsonutterances = suggestions.map(a => a.uttr.replace(/[^A-Za-z0-9]/gm, ''));
+                    let jsonutterances = suggestions.map(a => a.uttr.replace(/[^A-Za-z0-9\s]/gm, ''));
                     // console.log('jsonutterances', jsonutterances);
-                    let filteredStopWordQueryText = utterance.replace(/[^A-Za-z0-9]/gm, '');
+                    let filteredStopWordQueryText = utterance.replace(/[^A-Za-z0-9\s]/gm, '');
                     // let filteredStopWordQueryText = removeStopwords(utterance.split(' ')).join(' ');
                     // console.log('filteredStopWordQueryText');
-                    let filteredSuggestions = findBestMatch(filteredStopWordQueryText, jsonutterances);
+                    let filteredSuggestions = stringSimilarity.findBestMatch(filteredStopWordQueryText, jsonutterances);
                     filteredSuggestions = filteredSuggestions.ratings.sort((a,b) => b.rating - a.rating);
-                    // console.log('filteredSuggestions', JSON.stringify(filteredSuggestions));
+                    console.log('filteredSuggestions', JSON.stringify(filteredSuggestions.slice(0,3)));
                     filteredSuggestions = filteredSuggestions.map(a => a.target);
                     let finalSugg = [];
                     filteredSuggestions.forEach(sug => {
-                        if (matchSug = suggestions.find(k => k.uttr.replace(/[^A-Za-z0-9]/gm, '') === sug)) {
+                        if (matchSug = suggestions.find(k => k.uttr.replace(/[^A-Za-z0-9\s]/gm, '') === sug)) {
                             finalSugg.push(matchSug.uttr);
                         }
                     })
@@ -783,7 +803,7 @@ module.exports = {
                 resolve(null);
             });
         });
-    },
+    },  
     
     contactInfodynamodbScan : function(params) {
         console.log('DynamoDB Scan Params::', JSON.stringify(params));
