@@ -4,7 +4,6 @@ const AllWhQuestions = require('./areas/AllWHQuestions');
 const IntentsWithMultipleSlots = require('./areas/IntentsWithMultipleSlots');
 const Unhandled = require('./areas/unhandled');
 const GVSUServices = require('./areas/GVSUServices');
-const IntentWithCategories = require('./areas/IntentWithCategories');
 const GVSUApplication = require('./areas/GVSUApplication');
 const GVSUPayment = require('./areas/GVSUPayment');
 const GVSUFindInfo = require('./areas/GVSUFindInfo');
