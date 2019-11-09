@@ -21,9 +21,12 @@ const IntentsWithCategories = {
 
         return allFuctions.suggestionsFromJson({utterance: serviceType}).then((suggestions) => {
             suggestions = suggestions.slice(0,5);
+            console.log("suggestions::",suggestions);
+            console.log("join suggestions",suggestions.join(', \n test '));
+            speechText = 'I can assist you with the queries like: '+ suggestions.join(', \n ');
             obj = {
-                speechText: 'I can assist you with the queries like: '+ suggestions.join(', \n '),
-                displayText: 'I can assist you with the queries like: '+ suggestions.join(', \n '),
+                speechText: speechText + '. \n'+allFuctions.repromptSpeechText,
+                displayText: speechText + '. \n'+allFuctions.repromptSpeechText,
                 repromptSpeechText: this.listenspeech,
                 sessionEnd: false
             }

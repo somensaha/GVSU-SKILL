@@ -173,9 +173,9 @@ const ErrorHandler = {
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     LaunchRequestHandler, 
-    Unhandled,...AllStaticIntents,
+    Unhandled,...AllStaticIntents,...IntentsWithCategories,
     ...IntentsWithMultipleSlots,...GVSUServices,...GVSUApplication,
-    ...GVSUFindInfo,...GVSUPayment,...IntentsWithCategories,...OpenCloseTime,
+    ...GVSUFindInfo,...GVSUPayment,...OpenCloseTime,
     ...PaymentLocation,...LostandFound,...AllWhQuestions,
     HelpIntentHandler, PauseIntentHandler, YesIntentHandler, 
     OtherBuiltinHanders, FallbackIntentHandler, SessionEndedRequestHandler,CancelAndStopIntentHandler

@@ -743,17 +743,23 @@ module.exports = {
                 // console.log('suggestionJSON', typeof body, body);
                 let suggestions = JSON.parse(body).suggestions;
                 if (slot) {
+                    
                     let suggestedSlotObj = [];
                     suggestions.forEach(obj => {
+                        // console.log('slot :::::::: ', (obj.slotname && obj.intent === intent));
                         if (obj.slotname && obj.intent === intent) {
+                            // console.log('suggestions :::::::: ', suggestions, 'slot :: ',slot)
                             let slotArr = obj.slotname.map(k => k.replace(/[^A-Z0-9]+/ig,'').toLowerCase());
     
                             
     
-                            // console.log('slotArr', slotArr);
-                            if (slotArr.includes(slot.replace(/[^A-Z0-9]+/ig,''))) {
+                            console.log('slotArr', slotArr);
+                            console.log('test ::: ',slot.replace(/[^A-Z0-9]+/ig,''));
+                            if (slotArr.includes(slot.toLowerCase().replace(/[^A-Z0-9]+/ig,''))) {
+                                console.log('slotArr', slotArr);
                                 let slottarr = obj.slotname.filter((k) => {
                                     if (k.replace(/[^A-Z0-9]+/ig,'').toLowerCase() !== slot.replace(/[^A-Z0-9]+/ig,'').toLowerCase()) {
+                                        console.log('k ==== ', k);
                                         return k;
                                     }
                                 })
@@ -774,6 +780,7 @@ module.exports = {
                             }
                         }
                     });
+                    console.log('suggestedSlotObj ::: ', suggestedSlotObj, ' :: length :: ',suggestedSlotObj.length)
                     if (suggestedSlotObj.length > 2 && shuffle) {
                         suggestedSlotObj = suggestedSlotObj.sort(function() {return 0.5 - Math.random()})
                     }
