@@ -1,4 +1,5 @@
 const allFuctions = require('../functions');
+//const mainJson = require('../apl/main.json');
 
 const IntentsWithCategories = {
     canHandle(handlerInput) {
@@ -9,6 +10,7 @@ const IntentsWithCategories = {
     },
     handle(handlerInput) {
         console.log("IntentsWithCategories Handler:: ", handlerInput);
+        var handler = handlerInput.responseBuilder;
         const currentIntent = handlerInput.requestEnvelope.request.intent;
         // var serviceType = handlerInput.requestEnvelope.request.intent.slots.searchphrase;
         var serviceType = allFuctions.getSlotValue(handlerInput);
@@ -21,8 +23,8 @@ const IntentsWithCategories = {
 
         return allFuctions.suggestionsFromJson({utterance: serviceType}).then((suggestions) => {
             suggestions = suggestions.slice(0,5);
-            console.log("suggestions::",suggestions);
-            console.log("join suggestions",suggestions.join(', \n testgit add '));
+            //console.log("suggestions::",suggestions);
+            console.log("join suggestions",suggestions.join(", \n testgit add \n "));
             speechText = 'I can assist you with the queries like: '+ suggestions.join(', \n ');
             obj = {
                 speechText: speechText + '. \n'+allFuctions.repromptSpeechText,

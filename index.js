@@ -97,7 +97,7 @@ const OtherBuiltinHanders = {
 					handlerInput.requestEnvelope.request.intent.name === 'AMAZON.PreviousIntent' ||
 					handlerInput.requestEnvelope.request.intent.name === 'AMAZON.ScrollRightIntent' ||
 					handlerInput.requestEnvelope.request.intent.name === 'AMAZON.ScrollDownIntent' ||
-					handlerInput.requestEnvelope.request.intent.name === 'AMAZON.ScrollLeftIntent' ||
+          handlerInput.requestEnvelope.request.intent.name === 'AMAZON.ScrollLeftIntent' ||
 					handlerInput.requestEnvelope.request.intent.name === 'AMAZON.ScrollUpIntent');
     },
     handle(handlerInput) {
@@ -168,7 +168,6 @@ const ErrorHandler = {
         return allFuctions.formSpeech(handlerInput, obj);
 	},
 };
-
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     LaunchRequestHandler, 

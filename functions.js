@@ -39,11 +39,11 @@ module.exports = {
     repromptSpeechText: 'What else would you like to know?',
     noValueReturned: "Sorry I couldn't find any information on that or maybe I misunderstood you. Please try again.",
     listenspeech: 'Is there anything else I can help you with?',
-	helpspeech: 'myLaker is designed to answer your university questions. How may I help you?',
+	helpspeech: 'myLaker is designed to answer your university questions like,what is FAFSA?are transcripts free? GVPD location and many more. What would you like to know?',
     YesPrompt: ' What would you like to know?',
     needtoLinkYourAccount: 'To access this service you need to link your account with Alexa.',
     optOutCategory: 'You have opted out of this category of questions.',
-    welcomeMessage: "Welcome to the Grand Valley State University myLaker Skill. What would you like to know?",
+    welcomeMessage: "Welcome to the Grand Valley State University myLaker Skill. myLaker is designed to answer your university questions like,what is FAFSA?are transcripts free? GVPD location and many more. What would you like to know?",
     signUpMessage: 'You have not registered with GVSU portal, Please sign up',
     semilinkWelcomeMessage: "Welcome to the myLaker Skill. ",
 	
@@ -222,9 +222,7 @@ module.exports = {
         }
         // console.log('Ended Response time at', new Date());
         return handler.getResponse();
-    },
-
-    
+    },    
 //for reminder other events after exit
     prependReminders: function(message,reminders) {
         if (reminders.length != 0){
