@@ -44,11 +44,37 @@ const HelpIntentHandler = {
 			var helpspeech = allFuctions.helpspeech;
 			var obj = {
 			  speechText: helpspeech,
-			  displayText: helpspeech,
+        displayText: helpspeech,
+        repromptSpeechText: allFuctions.listenspeech,
 			  sessionEnd: false
 			}
 			return allFuctions.formSpeech(handlerInput, obj);
     }
+};
+
+const RepeatIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.RepeatIntent';
+  },
+  handle(handlerInput) {
+    console.log('AMAZON.RepeatIntent::', handlerInput);
+    var repeatSpeech = '';
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    
+    if (attributes.lastSpeechText) {
+      repeatSpeech =  attributes.lastSpeechText;
+    }   
+    console.log('AMAZON.RepeatIntent speech =======>', repeatSpeech);
+    //var helpspeech = allFuctions.helpspeech;
+    var obj = {
+      speechText: repeatSpeech,
+      displayText: repeatSpeech,
+      repromptSpeechText: allFuctions.listenspeech,
+      sessionEnd: false
+    }
+    return allFuctions.formSpeech(handlerInput, obj);
+  }
 };
 
 const PauseIntentHandler = {
@@ -175,7 +201,7 @@ exports.handler = Alexa.SkillBuilders.custom()
     ...IntentsWithMultipleSlots,...GVSUServices,...GVSUApplication,
     ...GVSUFindInfo,...GVSUPayment,...OpenCloseTime,
     ...PaymentLocation,...LostandFound,...AllWhQuestions,
-    HelpIntentHandler, PauseIntentHandler, YesIntentHandler, 
+    HelpIntentHandler, RepeatIntentHandler, PauseIntentHandler, YesIntentHandler, 
     OtherBuiltinHanders, FallbackIntentHandler, SessionEndedRequestHandler,CancelAndStopIntentHandler
       )
   .addErrorHandlers(ErrorHandler)

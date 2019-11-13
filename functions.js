@@ -39,11 +39,11 @@ module.exports = {
     repromptSpeechText: 'What else would you like to know?',
     noValueReturned: "Sorry I couldn't find any information on that or maybe I misunderstood you. Please try again.",
     listenspeech: 'Is there anything else I can help you with?',
-	helpspeech: 'myLaker is designed to answer your university questions like,what is FAFSA?are transcripts free? GVPD location and many more. What would you like to know?',
+	helpspeech: 'myLaker is designed to answer your university questions on some topics like Financial Aid, Housing, Registrar and so on, e.g. You can ask by saying where is registrar located. What would you like to know?',
     YesPrompt: ' What would you like to know?',
     needtoLinkYourAccount: 'To access this service you need to link your account with Alexa.',
     optOutCategory: 'You have opted out of this category of questions.',
-    welcomeMessage: "Welcome to the Grand Valley State University myLaker Skill. myLaker is designed to answer your university questions like,what is FAFSA?are transcripts free? GVPD location and many more. What would you like to know?",
+    welcomeMessage: "myLaker is designed to answer your university questions on some topics like Financial Aid, Housing, Registrar and so on, e.g. You can ask by saying where is registrar located. What would you like to know?",
     signUpMessage: 'You have not registered with GVSU portal, Please sign up',
     semilinkWelcomeMessage: "Welcome to the myLaker Skill. ",
 	
@@ -220,6 +220,16 @@ module.exports = {
             console.log('end session id false');
             handler.withShouldEndSession(false);
         }
+        
+        //required for repeat intent
+        if (obj.speechText !== undefined && obj.speechText !== null ){
+                const attributes = handlerInput.attributesManager.getSessionAttributes();
+                attributes.lastSpeechText = obj.speechText;
+                handlerInput.attributesManager.setSessionAttributes(attributes);
+                //lastSpeechText = obj.speechText;
+                console.log('last speech obj', attributes.lastSpeechText);
+        }
+
         // console.log('Ended Response time at', new Date());
         return handler.getResponse();
     },    
