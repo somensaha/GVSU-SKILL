@@ -15,7 +15,7 @@ module.exports = {
     getColumn: "Answer",
     dayNames: {0:'Sunday',1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday',6:'Saturday'},
     StaticTable: 'AskGVSUStatic',
-    // DynamicTable: 'AskPVAMUDynamic',
+    DynamicTable: 'AskGVSUDynamic',
     // PVAMUDepartmentMaster:'AskPVAMUDeptMaster',
     
     defaultImage: 'https://gvsu-skill.s3.amazonaws.com/logo.png',      //change
@@ -844,6 +844,147 @@ module.exports = {
                 }
             }
         });
-    }
+    },
+
+    // for real time demo =============================== 
+    slotForRealTime: function(handlerInput, slotName = null) {
+        console.log('slotForRealTime :: ', slotName);
+
+        if(slot !== null) {
+            if (slot === 'staticNoSlot') {
+                var params = {
+                    TableName: this.DynamicTable,
+                    FilterExpression: "#title = :title_val",
+                    ExpressionAttributeNames: {
+                        "#title": 'IntentName',
+                    },
+                    ExpressionAttributeValues: { ":title_val": intentName }
+                };
+            } else {
+                return this.searchQueryRealTime(slotName,handlerInput).then((ans) => {
+                    var obj = null;
+                    if (ans === null) {
+                        obj = {
+                            speechText: this.noValueReturned,
+                            displayText: this.noValueReturned,
+                            repromptSpeechText: this.listenspeech
+                        }
+                    } else {
+                        obj = {
+                            speechText: ans + ' What else would you like to know?',
+                            displayText: ans + ' What else would you like to know?',
+                            repromptSpeechText: this.listenspeech
+                        }
+                    }
+                    return this.formSpeech(handlerInput, obj);
+                });
+            }
+        } else {
+            //emit to unhandle
+            const unhandled = require('./areas/unhandled');
+            return unhandled.handle(handlerInput);
+        }
+
+        
+        
+    },
+
+    searchQueryRealTime: function(slotName = null,handlerInput) {
+        console.log("intent name in search query::",handlerInput.requestEnvelope.request.intent);
+        return new Promise((resolve, reject) => {
+			var params = {
+				TableName: this.DynamicTable,
+				FilterExpression: "#title = :title_val",
+				ExpressionAttributeNames: {
+					  "#title": 'IntentName',
+				},
+				ExpressionAttributeValues: { ":title_val": handlerInput.requestEnvelope.request.intent.name}
+            }
+            
+            console.log('searchQueryRealTime', params);
+
+			// Scan DynamoDB
+			var docClient = new AWS.DynamoDB.DocumentClient();
+			docClient.scan(params, (err, data) => {
+				if(err) {
+                    console.log('stringSimilarityfn err =>' + JSON.stringify(err))
+                    resolve(null);                    
+				}
+                var slots = [];
+                
+				if(data) {
+                    console.log('data.Items', data.Items);
+					data.Items.forEach(function(itemdata) {
+                        console.log("itemslot",itemdata.Slot.values);
+                        //console.log("itemslot",JSON.stringify(itemdata.Slot.values));
+                        const arraySlot = itemdata.Slot.values;
+                        //console.log('array slottt', arraySlot);
+                        if (arraySlot.length !== 0) {
+                            arraySlot.forEach(std => {
+                                if (std.trim() !== '') {
+                                    slots.push(std);
+                                }
+                            })
+                        }
+					});
+                    if (slots.length === 0) {
+                        resolve(null);
+                    }
+                    // Levenstein best match result
+                    console.log('slotname=====>', slotName);
+                    console.log('slots arrayyy', slots);
+					var matches = stringSimilarity.findBestMatch(slotName, slots);
+					console.log('stringSimilarityfn best match slot ==> ' + slotName + '====with dynamodb slots ==>' + JSON.stringify(slots) + ' result ==> ' + JSON.stringify(matches));
+                    if (matches.bestMatch.rating < 0.5) {
+                        resolve(null);
+                    } else {
+                        var bestMatched = data.Items.filter(item => {
+                            return item.Slot.values.includes(matches.bestMatch.target)
+                        });
+                        console.log('stringSimilarityfn best match answer ======', bestMatched[0].Answer);
+                        resolve(bestMatched[0].Answer);
+                    }
+				}
+			});
+		});
+    },
+
+
+    setDynamoParamsReal: async function(handlerInput) {
+        var intentName = handlerInput.requestEnvelope.request.intent.name;
+        var slot = this.getSlotValue(handlerInput);
+        console.log('slot', slot);
+        if(slot !== null) {
+            if (slot === 'staticNoSlot') {
+                var params = {
+                    TableName: this.DynamicTable,
+                    FilterExpression: "#title = :title_val",
+                    ExpressionAttributeNames: {
+                        "#title": 'IntentName',
+                    },
+                    ExpressionAttributeValues: { ":title_val": intentName }
+                };
+            } else {
+                slot = slot.toLowerCase().replace(/[^A-Z0-9]+/ig, "");
+                var params = {
+                    TableName: this.DynamicTable,
+                    FilterExpression: "#title = :title_val AND #slot = :slot_val",
+                    ExpressionAttributeNames: {
+                        "#title": 'IntentName',
+                        "#slot": 'Slot'
+                    },
+                    ExpressionAttributeValues: { ":title_val": intentName, ":slot_val": slot }
+                };
+            }
+        } else {
+            //emit to unhandle
+            const unhandled = require('./areas/unhandled');
+            return unhandled.handle(handlerInput);
+        }
+        
+
+        var obj = await this.scanDynamoItem(params);
+        return this.formSpeech(handlerInput, obj);
+    },
 
 }
