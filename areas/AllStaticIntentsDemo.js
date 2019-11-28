@@ -10,7 +10,8 @@ const AllStaticIntents = {
                 || handlerInput.requestEnvelope.request.intent.name === 'StudentFAFSAReal'
                 || handlerInput.requestEnvelope.request.intent.name === 'StudentLibraryFeesReal'
                 || handlerInput.requestEnvelope.request.intent.name === 'StudentFinancialAwardReal'
-
+                || handlerInput.requestEnvelope.request.intent.name === 'StudentFAFSAStatusReal'
+                || handlerInput.requestEnvelope.request.intent.name === 'StudentAccountBalanceDueReal'
         );
     },
     handle(handlerInput) {
