@@ -849,9 +849,10 @@ module.exports = {
     // for real time demo =============================== 
     slotForRealTime: function(handlerInput, slotName = null) {
         console.log('slotForRealTime :: ', slotName);
-
-        if(slot !== null) {
-            if (slot === 'staticNoSlot') {
+        const intentName = handlerInput.requestEnvelope.request.intent.name;
+        const ignoredArr = ['MyAdvisors', 'GeneralInstructorReal'];
+        if(slotName !== null) {
+            if (slotName === 'staticNoSlot') {
                 var params = {
                     TableName: this.DynamicTable,
                     FilterExpression: "#title = :title_val",
@@ -870,10 +871,17 @@ module.exports = {
                             repromptSpeechText: this.listenspeech
                         }
                     } else {
-                        obj = {
-                            speechText: ans + ' What else would you like to know?',
-                            displayText: ans + ' What else would you like to know?',
-                            repromptSpeechText: this.listenspeech
+                        obj = {};
+                        if (ignoredArr.includes(intentName)) {
+                            obj['speechText'] = ans;
+                            obj['displayStandardCardText'] = ans;
+                            obj['addConfirmIntentDirective'] = intentName;
+                            obj['slots'] = handlerInput.requestEnvelope.request.intent.slots;
+
+                        } else {
+                            obj['speechText'] = ans + ' What else would you like to know?';
+                            obj['displayText'] = ans + ' What else would you like to know?';
+                            obj['repromptSpeechText'] = this.listenspeech;
                         }
                     }
                     return this.formSpeech(handlerInput, obj);
