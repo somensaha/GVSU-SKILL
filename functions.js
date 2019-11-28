@@ -43,7 +43,8 @@ module.exports = {
     YesPrompt: ' What would you like to know?',
     needtoLinkYourAccount: 'To access this service you need to link your account with Alexa.',
     optOutCategory: 'You have opted out of this category of questions.',
-    welcomeMessage: "myLaker is designed to answer your university questions on some topics like Financial Aid, Housing, Registrar and so on, e.g. You can ask by saying where is registrar located. What would you like to know?",
+    welcomeMessage: 'Welcome back Phillie! MyLaker is designed to answer your university questions on some topics like Financial Aid, Housing, Registrar and so on, e.g. You can ask by saying where is registrar located. I can also answer your personalized questions. What would you like to know?',
+    //welcomeMessage: "myLaker is designed to answer your university questions on some topics like Financial Aid, Housing, Registrar and so on, e.g. You can ask by saying where is registrar located. What would you like to know?",
     signUpMessage: 'You have not registered with GVSU portal, Please sign up',
     semilinkWelcomeMessage: "Welcome to the myLaker Skill. ",
 	
