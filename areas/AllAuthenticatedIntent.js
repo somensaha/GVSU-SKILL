@@ -21,12 +21,7 @@ const REALIntents = {
         // return allFuctions.linkUser(handlerInput).then((userdata) => {
             const currentIntent = handlerInput.requestEnvelope.request.intent;
             console.log("AllAuthenticated Handler Intent:: ", currentIntent);
-            console.log("AllAuthenticated Handler Slots:: ", JSON.stringify(handlerInput.requestEnvelope.request.intent.slots));
-            console.log("next class slot", handlerInput.requestEnvelope.request.intent.slots.nextclassname.value, ' == ',
-            handlerInput.requestEnvelope.request.intent.name == 'NextClassTimeReal' , '==', 
-            typeof handlerInput.requestEnvelope.request.intent.slots.nextclassname.value === 'undefined', '==',
-            handlerInput.requestEnvelope.request.intent.slots.nextclassname.value);
-            
+            console.log("AllAuthenticated Handler Slots:: ", JSON.stringify(handlerInput.requestEnvelope.request.intent.slots));          
             // ;
             if(handlerInput.requestEnvelope.request.intent.name == 'MyAdvisors'){
                 if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'CONFIRMED') {
