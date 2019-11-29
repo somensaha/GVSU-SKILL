@@ -15,8 +15,7 @@ const REALIntents = {
                 || handlerInput.requestEnvelope.request.intent.name === 'MyAdvisorsPhoneNo'
             )
     }, handle(handlerInput) {
-
-
+    
            var serviceType = '';
         // return allFuctions.linkUser(handlerInput).then((userdata) => {
             const currentIntent = handlerInput.requestEnvelope.request.intent;
@@ -37,23 +36,33 @@ const REALIntents = {
                     console.log('It\'s yessssssssss', JSON.stringify(handlerInputConfig.requestEnvelope.request));
                     return REALIntents.handle(handlerInputConfig);
                     
-                }
+                } else if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'DENIED') {
+                    obj = {
+                        speechText: allFuctions.YesPrompt,
+                        displayText: allFuctions.YesPrompt,
+                        repromptSpeechText: allFuctions.listenspeech
+                    }
+                    return allFuctions.formSpeech(handlerInput, obj);
+                } 
                 console.log("advisor type::",handlerInput.requestEnvelope.request.intent.slots.advisortype);
                 serviceType = handlerInput.requestEnvelope.request.intent.slots.advisortype.value;
             }else if (handlerInput.requestEnvelope.request.intent.name == 'GeneralInstructorReal'){
                 if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'CONFIRMED') {
                     handlerInputConfig = handlerInput;
                     var slotconfig = handlerInput.requestEnvelope.request.intent.slots.nextclassname;
-                    //slotconfig['name'] = 'advisortypephone';
                     console.log('slotconfig', slotconfig);
-                    // handlerInputConfig.requestEnvelope.request.intent.slots['advisortypephone'] = slotconfig;
-                    // delete handlerInputConfig.requestEnvelope.request.intent.slots['advisortype'];
-                    // console.log('handlerInputConfig slot', JSON.stringify(handlerInputConfig.requestEnvelope.request.intent));
                     handlerInputConfig.requestEnvelope.request.intent.name = 'GeneralInstructorContactInfoReal';
                     handlerInputConfig.requestEnvelope.request.intent.confirmationStatus = 'NONE';
                     console.log('It\'s yessssssssss', JSON.stringify(handlerInputConfig.requestEnvelope.request));
                     return REALIntents.handle(handlerInputConfig);                  
-                }
+                }  else if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'DENIED') {
+                    obj = {
+                        speechText: allFuctions.YesPrompt,
+                        displayText: allFuctions.YesPrompt,
+                        repromptSpeechText: allFuctions.listenspeech
+                    }
+                    return allFuctions.formSpeech(handlerInput, obj);
+                } 
                 console.log("Professor::",handlerInput.requestEnvelope.request.intent.slots.nextclassname.value)
                 serviceType = handlerInput.requestEnvelope.request.intent.slots.nextclassname.value;
             }else if (handlerInput.requestEnvelope.request.intent.name == 'NextClassTimeReal' && 
