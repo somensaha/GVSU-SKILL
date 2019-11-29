@@ -265,6 +265,7 @@ module.exports = {
             var slotObj = slotKeys.filter(item => {
                 return handlerInput.requestEnvelope.request.intent.slots[item].resolutions !== undefined;
             });
+            console.log('slotObj ::::: ', slotObj);
             // if (slotObj) {
             //     slotObj = slotObj[0];
             // }

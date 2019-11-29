@@ -13,6 +13,7 @@ const REALIntents = {
                 || handlerInput.requestEnvelope.request.intent.name === 'GeneralInstructorReal'
                 || handlerInput.requestEnvelope.request.intent.name === 'GeneralInstructorContactInfoReal'
                 || handlerInput.requestEnvelope.request.intent.name === 'MyAdvisorsPhoneNo'
+                || handlerInput.requestEnvelope.request.intent.name === 'ClassDayOfWeekReal'
             )
     }, handle(handlerInput) {
     
@@ -70,6 +71,8 @@ const REALIntents = {
                 typeof handlerInput.requestEnvelope.request.intent.slots.nextclassname.value === 'undefined'){
                 console.log("next class::",handlerInput.requestEnvelope.request.intent.slots.nextclassname.value)
                 serviceType = 'Physics';
+            }else if (handlerInput.requestEnvelope.request.intent.name == 'ClassDayOfWeekReal'){
+                serviceType = handlerInput.requestEnvelope.request.intent.slots.dayofweek.value;
             }else{
                 serviceType = allFuctions.getSlotValue(handlerInput);
             }
