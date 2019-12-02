@@ -39,8 +39,8 @@ const REALIntents = {
                     
                 } else if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'DENIED') {
                     obj = {
-                        speechText: allFuctions.YesPrompt,
-                        displayText: allFuctions.YesPrompt,
+                        speechText: allFuctions.repromptSpeechText,
+                        displayText: allFuctions.repromptSpeechText,
                         repromptSpeechText: allFuctions.listenspeech
                     }
                     return allFuctions.formSpeech(handlerInput, obj);
@@ -58,8 +58,8 @@ const REALIntents = {
                     return REALIntents.handle(handlerInputConfig);                  
                 }  else if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'DENIED') {
                     obj = {
-                        speechText: allFuctions.YesPrompt,
-                        displayText: allFuctions.YesPrompt,
+                        speechText: allFuctions.repromptSpeechText,
+                        displayText: allFuctions.repromptSpeechText,
                         repromptSpeechText: allFuctions.listenspeech
                     }
                     return allFuctions.formSpeech(handlerInput, obj);
