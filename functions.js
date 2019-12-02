@@ -21,17 +21,11 @@ module.exports = {
     defaultImage: 'https://gvsu-skill.s3.amazonaws.com/logo.png',      //change
 
     remindersArray: [
-        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about University Counseling Services next time. Goodbye! ',
-        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Financial Aid next time. Goodbye! ',
-        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Housing next time. Goodbye!',
-        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Registrar next time. Goodbye!',
-        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Information Technology Services next time. Goodbye!',
-        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Parent Orientation next time. Goodbye!',
-        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Career Services next time. Goodbye!',
-        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Police Department next time. Goodbye!',
-        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Library next time. Goodbye!',
-        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Admissions next time. Goodbye!',
-        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Student Employment next time. Goodbye! '
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about University Counseling Services next time.',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Financial Aid next time.',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Housing next time.',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Registrar next time.',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Information Technology Services next time.'
     ],
 
     daysArray: ['','monday','tuesday','wednesday','thursday','friday','saturday','sunday'],
