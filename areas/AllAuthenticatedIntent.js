@@ -1,7 +1,7 @@
 const allFuctions = require('../functions');
 // const demoAnswerJSON = require('./../demoAnswer.json');
 
-
+var flagForstatus = false;
 const REALIntents = {
     canHandle(handlerInput) {
         return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -16,8 +16,9 @@ const REALIntents = {
                 || handlerInput.requestEnvelope.request.intent.name === 'ClassDayOfWeekReal'
             )
     }, handle(handlerInput) {
-    
+        console.log('flagForstatus handlerInput top ===== ', flagForstatus);
            var serviceType = '';
+        //    var flagForstatus = false;
         // return allFuctions.linkUser(handlerInput).then((userdata) => {
             const currentIntent = handlerInput.requestEnvelope.request.intent;
             console.log("AllAuthenticated Handler Intent:: ", currentIntent);
@@ -25,6 +26,7 @@ const REALIntents = {
             // ;
             if(handlerInput.requestEnvelope.request.intent.name == 'MyAdvisors'){
                 if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'CONFIRMED') {
+                    // flagForstatus = true;
                     handlerInputConfig = handlerInput;
                     var slotconfig = handlerInput.requestEnvelope.request.intent.slots.advisortype;
                     slotconfig['name'] = 'advisortypephone';
@@ -49,11 +51,13 @@ const REALIntents = {
                 serviceType = handlerInput.requestEnvelope.request.intent.slots.advisortype.value;
             }else if (handlerInput.requestEnvelope.request.intent.name == 'GeneralInstructorReal'){
                 if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'CONFIRMED') {
+                    flagForstatus = true;
+                    console.log('flagForstatus 1 ===== ', flagForstatus);
                     handlerInputConfig = handlerInput;
                     var slotconfig = handlerInput.requestEnvelope.request.intent.slots.nextclassname;
                     console.log('slotconfig', slotconfig);
                     handlerInputConfig.requestEnvelope.request.intent.name = 'GeneralInstructorContactInfoReal';
-                    handlerInputConfig.requestEnvelope.request.intent.confirmationStatus = 'NONE';
+                    // handlerInputConfig.requestEnvelope.request.intent.confirmationStatus = 'NONE';
                     console.log('It\'s yessssssssss', JSON.stringify(handlerInputConfig.requestEnvelope.request));
                     return REALIntents.handle(handlerInputConfig);                  
                 }  else if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'DENIED') {
@@ -73,16 +77,18 @@ const REALIntents = {
                 serviceType = 'Physics';
             }else if (handlerInput.requestEnvelope.request.intent.name == 'ClassDayOfWeekReal'){
                 serviceType = handlerInput.requestEnvelope.request.intent.slots.dayofweek.value;
+            // }else if (handlerInputConfig.requestEnvelope.request.intent.name = 'GeneralInstructorContactInfoReal'){
+            //     flagForstatus = false;
             }else{
                 serviceType = allFuctions.getSlotValue(handlerInput);
             }
             console.log("AllAuthenticated Handler:: currentIntent::" +currentIntent.name+" serviceType::" +serviceType);
-
+            // flagForstatus = false;
             if (typeof serviceType != 'undefined' && serviceType != null) {
                 serviceType = serviceType.toLowerCase();
                 serviceType = serviceType.trim();
                 serviceType = serviceType.replace(/\s|\.|\-/g, '');
-                return allFuctions.slotForRealTime(handlerInput, serviceType);
+                return allFuctions.slotForRealTime(handlerInput, serviceType, flagForstatus);
             } else {
                 var obj = {
                     speechText: allFuctions.noValueReturned,
@@ -91,6 +97,8 @@ const REALIntents = {
                 }
                 return allFuctions.formSpeech(handlerInput, obj);
             }
+            // console.log('flagForstatus handlerInput end ===== ', flagForstatus);
+            // flagForstatus = false;
         // });
     }
 }

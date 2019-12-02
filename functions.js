@@ -886,6 +886,15 @@ module.exports = {
                             obj['repromptSpeechText'] = this.listenspeech;
                         }
                     }
+
+                    //reset the flag
+                    // if(handlerInput.requestEnvelope.request.intent.name == 'GeneralInstructorContactInfoReal'){
+                    //     obj['flagForstatus'] = false;
+                    //     flagForstatus = false;
+                    //     console.log('searchQueryRealTime flagForstatus', flagForstatus, ' === ', obj['flagForstatus']);
+                    //     // return this.formSpeech(handlerInput, obj, flagForstatus);
+                    // }
+                    // console.log('searchQueryRealTime flagForstatus', flagForstatus, ' === ', obj['flagForstatus']);
                     return this.formSpeech(handlerInput, obj);
                 });
             }
@@ -952,6 +961,34 @@ module.exports = {
                             return item.Slot.values.includes(matches.bestMatch.target)
                         });
                         console.log('stringSimilarityfn best match answer ======', bestMatched[0].Answer);
+
+                        console.log('confirmationStatus ============ ',handlerInput.requestEnvelope.request.intent.confirmationStatus);
+                        if (handlerInput.requestEnvelope.request.intent.name == 'GeneralInstructorContactInfoReal' 
+                            && slotName == 'history'
+                            // && !flagForstatus
+                            && handlerInput.requestEnvelope.request.intent.confirmationStatus === 'NONE'
+                            ){
+                            resolve('Your Writing History professor is Gabriele Gottlieb.' + bestMatched[0].Answer);
+                        }
+
+                        if (handlerInput.requestEnvelope.request.intent.name == 'GeneralInstructorContactInfoReal' 
+                            && slotName == 'elementaryalgebra'
+                            // && !flagForstatus
+                            && handlerInput.requestEnvelope.request.intent.confirmationStatus === 'NONE'
+                            ){
+                            resolve('Your Elementary Algebra professor is Feryal Alayont. ' + bestMatched[0].Answer);
+                        }
+
+                        if (handlerInput.requestEnvelope.request.intent.name == 'GeneralInstructorContactInfoReal' 
+                            && slotName == 'physicsforengineering'
+                            // && !flagForstatus
+                            && handlerInput.requestEnvelope.request.intent.confirmationStatus === 'NONE'
+                            ){
+                            resolve('Your Physics for Engineering professor is Dr. Keith Oliver.  ' + bestMatched[0].Answer);
+                        }
+                        // console.log('after ans flagForstatus', flagForstatus);
+                        // flagForstatus = false;
+                        // console.log('after ans flagForstatus', flagForstatus);
                         resolve(bestMatched[0].Answer);
                     }
 				}
