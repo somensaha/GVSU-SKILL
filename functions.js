@@ -21,17 +21,17 @@ module.exports = {
     defaultImage: 'https://gvsu-skill.s3.amazonaws.com/logo.png',      //change
 
     remindersArray: [
-        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about University Counseling Services. ',
-        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Financial Aid. ',
-        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Housing.',
-        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Registrar.',
-        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Information Technology Services.',
-        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Parent Orientation.',
-        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Career Services.',
-        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Police Department.',
-        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Library.',
-        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Admissions.',
-        'Thank you for using myLaker, Just a reminder, don\'t forget to ask about Student Employment. '
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about University Counseling Services next time. Goodbye! ',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Financial Aid next time. Goodbye! ',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Housing next time. Goodbye!',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Registrar next time. Goodbye!',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Information Technology Services next time. Goodbye!',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Parent Orientation next time. Goodbye!',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Career Services next time. Goodbye!',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Police Department next time. Goodbye!',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Library next time. Goodbye!',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Admissions next time. Goodbye!',
+        'Thank you for using LakerBuddy virtual assistant!, don\'t forget to ask about Student Employment next time. Goodbye! '
     ],
 
     daysArray: ['','monday','tuesday','wednesday','thursday','friday','saturday','sunday'],
@@ -39,7 +39,7 @@ module.exports = {
     repromptSpeechText: 'What else would you like to know?',
     noValueReturned: "Sorry I couldn't find any information on that or maybe I misunderstood you. Please try again.",
     listenspeech: 'Is there anything else I can help you with?',
-	helpspeech: 'myLaker is designed to answer your university questions on some topics like Financial Aid, Housing, Registrar and so on, e.g. You can ask by saying where is registrar located. What would you like to know?',
+	helpspeech: 'Welcome back Philly! LakerBuddy is designed to answer your university questions on some topics like Financial Aid, Housing, Registrar and so on, e.g. You can ask by saying where is registrar located. What would you like to know?',
     YesPrompt: ' What would you like to know?',
     needtoLinkYourAccount: 'To access this service you need to link your account with Alexa.',
     optOutCategory: 'You have opted out of this category of questions.',
