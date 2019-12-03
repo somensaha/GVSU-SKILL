@@ -961,15 +961,15 @@ module.exports = {
                             && slotName == 'history'
                             // && !flagForstatus
                             && handlerInput.requestEnvelope.request.intent.confirmationStatus === 'NONE'
-                            ){
-                            resolve('Your Writing History professor is Gabriele Gottlieb.' + bestMatched[0].Answer);
+                        ){
+                            resolve('Your Writing History professor is Gabriele Gottlieb. ' + bestMatched[0].Answer);
                         }
 
                         if (handlerInput.requestEnvelope.request.intent.name == 'GeneralInstructorContactInfoReal' 
                             && slotName == 'elementaryalgebra'
                             // && !flagForstatus
                             && handlerInput.requestEnvelope.request.intent.confirmationStatus === 'NONE'
-                            ){
+                        ){
                             resolve('Your Elementary Algebra professor is Feryal Alayont. ' + bestMatched[0].Answer);
                         }
 
@@ -977,7 +977,7 @@ module.exports = {
                             && slotName == 'physicsforengineering'
                             // && !flagForstatus
                             && handlerInput.requestEnvelope.request.intent.confirmationStatus === 'NONE'
-                            ){
+                        ){
                             resolve('Your Physics for Engineering professor is Dr. Keith Oliver.  ' + bestMatched[0].Answer);
                         }
                         // console.log('after ans flagForstatus', flagForstatus);

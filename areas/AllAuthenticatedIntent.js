@@ -1,7 +1,7 @@
 const allFuctions = require('../functions');
 // const demoAnswerJSON = require('./../demoAnswer.json');
 
-var flagForstatus = false;
+// var flagForstatus = false;
 const REALIntents = {
     canHandle(handlerInput) {
         return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -16,7 +16,7 @@ const REALIntents = {
                 || handlerInput.requestEnvelope.request.intent.name === 'ClassDayOfWeekReal'
             )
     }, handle(handlerInput) {
-        console.log('flagForstatus handlerInput top ===== ', flagForstatus);
+        // console.log('flagForstatus handlerInput top ===== ', flagForstatus);
            var serviceType = '';
         //    var flagForstatus = false;
         // return allFuctions.linkUser(handlerInput).then((userdata) => {
@@ -51,8 +51,8 @@ const REALIntents = {
                 serviceType = handlerInput.requestEnvelope.request.intent.slots.advisortype.value;
             }else if (handlerInput.requestEnvelope.request.intent.name == 'GeneralInstructorReal'){
                 if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'CONFIRMED') {
-                    flagForstatus = true;
-                    console.log('flagForstatus 1 ===== ', flagForstatus);
+                    // flagForstatus = true;
+                    // console.log('flagForstatus 1 ===== ', flagForstatus);
                     handlerInputConfig = handlerInput;
                     var slotconfig = handlerInput.requestEnvelope.request.intent.slots.nextclassname;
                     console.log('slotconfig', slotconfig);
@@ -88,7 +88,7 @@ const REALIntents = {
                 serviceType = serviceType.toLowerCase();
                 serviceType = serviceType.trim();
                 serviceType = serviceType.replace(/\s|\.|\-/g, '');
-                return allFuctions.slotForRealTime(handlerInput, serviceType, flagForstatus);
+                return allFuctions.slotForRealTime(handlerInput, serviceType);
             } else {
                 var obj = {
                     speechText: allFuctions.noValueReturned,
