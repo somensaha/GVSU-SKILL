@@ -11,6 +11,8 @@ const IntentsWithCategories = require('./areas/IntentsWithCategories');
 const OpenCloseTime = require('./areas/OpenCloseTime');
 const PaymentLocation = require('./areas/PaymentLocation');
 const LostandFound = require('./areas/LostandFound');
+const GVSUOrientation = require('./areas/GVSUOrientation');
+const GVSUOrientationTime = require('./areas/GVSUOrientationTime');
 const AllAuthenticatedIntent = require('./areas/AllAuthenticatedIntent');
 const AllStaticIntentsDemo = require('./areas/AllStaticIntentsDemo');
 const AllStaticIntents = require('./areas/AllStaticIntents');
@@ -201,7 +203,8 @@ exports.handler = Alexa.SkillBuilders.custom()
     LaunchRequestHandler, 
     Unhandled,...AllStaticIntents,...IntentsWithCategories,
     ...IntentsWithMultipleSlots,...GVSUServices,...GVSUApplication,
-    ...GVSUFindInfo,...GVSUPayment,...OpenCloseTime, ...AllAuthenticatedIntent, ...AllStaticIntentsDemo, 
+    ...GVSUFindInfo,...GVSUPayment,...OpenCloseTime, ...GVSUOrientation, ...GVSUOrientationTime,
+    ...AllAuthenticatedIntent, ...AllStaticIntentsDemo, 
     ...PaymentLocation,...LostandFound,...AllWhQuestions,
     HelpIntentHandler, RepeatIntentHandler, PauseIntentHandler, YesIntentHandler, 
     OtherBuiltinHanders, FallbackIntentHandler, SessionEndedRequestHandler,CancelAndStopIntentHandler

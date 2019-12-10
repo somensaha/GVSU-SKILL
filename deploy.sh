@@ -6,6 +6,6 @@ zip -r alexa.zip index.js functions.js node_modules/ areas/ apl/
 echo "alexa.zip created";
 echo "Attempting to deploy project in lamda function";
 sudo aws lambda update-function-code \
---function-name myLakerDemo \
+--function-name myLaker \
 --zip-file fileb://alexa.zip
 echo "Deploy done to lamda function";

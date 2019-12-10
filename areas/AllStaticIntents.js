@@ -14,6 +14,11 @@ const AllStaticIntents = {
             || handlerInput.requestEnvelope.request.intent.name === 'FinancialAidApplicationDeadline'
             || handlerInput.requestEnvelope.request.intent.name === 'FinancialAidApplicationTime' 
             || handlerInput.requestEnvelope.request.intent.name === 'MicrosoftOffice'
+            || handlerInput.requestEnvelope.request.intent.name === 'GVSUResume'
+            || handlerInput.requestEnvelope.request.intent.name === 'GVSUResumeFeedback'
+            || handlerInput.requestEnvelope.request.intent.name === 'GVSUResumeReject'
+            || handlerInput.requestEnvelope.request.intent.name === 'GVSUGameRoom'
+            || handlerInput.requestEnvelope.request.intent.name === 'LibraryOverdue'
 
         );
     },
