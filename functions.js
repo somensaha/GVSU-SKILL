@@ -1028,4 +1028,58 @@ module.exports = {
         return this.formSpeech(handlerInput, obj);
     },
 
+    linkUser: function(handlerInput) {
+        var ch = this;
+        return new Promise((resolve, reject) => {
+            var user = handlerInput.attributesManager.getSessionAttributes('GAMESTATE');
+            if (user === null || Object.keys(user).length === 0) {
+                var accessToken = handlerInput.requestEnvelope.session.user.accessToken;
+                if (accessToken !== undefined) {
+                    var uri = 'https://eis.gvsu.edu/oauth2/profile?access_token=' + accessToken;
+                    console.log('get user profile from gvsu portal uri ==>', uri);
+                    request(uri, function(err, response, body) {
+                        console.log('linkUser log::err', err, 'response', response.statusCode, 'body', body);
+                        if (err || response.statusCode !== 200) {
+                            var attributes = {
+                                GAMESTATE: {
+                                    status: "UnLinked",
+                                    data  : null
+                                }  
+                            }
+                            handlerInput.attributesManager.setSessionAttributes(attributes);
+                            user = handlerInput.attributesManager.getSessionAttributes('GAMESTATE').GAMESTATE;
+                            resolve(user);
+                        } else {
+                            var data = JSON.parse(body);
+                            // var emailID = data.emails[0].value;
+                            // var demoEmailID = data.emails[0].value;
+                            var attributes = {
+                                GAMESTATE: {
+                                    status: "Linked",
+                                    data  : data
+                                }  
+                            }
+                            handlerInput.attributesManager.setSessionAttributes(attributes);
+                            user = handlerInput.attributesManager.getSessionAttributes('GAMESTATE').GAMESTATE;
+                            resolve(user);
+                        }
+                    });
+                } else {
+                    var attributes = {
+                        GAMESTATE: {
+                            status: "UnLinked",
+                            data  : null
+                        }  
+                    }
+                    handlerInput.attributesManager.setSessionAttributes(attributes);
+                    user = handlerInput.attributesManager.getSessionAttributes('GAMESTATE').GAMESTATE;
+                    resolve(user);
+                }
+            } else {
+                user = handlerInput.attributesManager.getSessionAttributes('GAMESTATE').GAMESTATE;
+                resolve(user);
+            }
+        });
+    }
+
 }

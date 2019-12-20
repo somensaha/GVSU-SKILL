@@ -24,6 +24,9 @@ const LaunchRequestHandler = {
     },
     handle(handlerInput) {
         console.log("LaunchRequest Handler::",JSON.stringify(handlerInput));
+        allFuctions.linkUser(handlerInput).then((user) => {
+          console.log('user profile', user);
+        });
         var obj = null;
         var welcomespeech = allFuctions.welcomeMessage;
         obj = {
