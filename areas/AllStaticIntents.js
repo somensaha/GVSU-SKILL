@@ -20,6 +20,8 @@ const AllStaticIntents = {
             || handlerInput.requestEnvelope.request.intent.name === 'GVSUGameRoom'
             || handlerInput.requestEnvelope.request.intent.name === 'LibraryOverdue'
             || handlerInput.requestEnvelope.request.intent.name === 'ClassRegistrationTime'            
+            || handlerInput.requestEnvelope.request.intent.name === 'ClassRegistration'
+            || handlerInput.requestEnvelope.request.intent.name === 'ClassSignUp'
         );
     },
     handle(handlerInput) {
