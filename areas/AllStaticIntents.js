@@ -22,6 +22,7 @@ const AllStaticIntents = {
             || handlerInput.requestEnvelope.request.intent.name === 'ClassRegistrationTime'            
             || handlerInput.requestEnvelope.request.intent.name === 'ClassRegistration'
             || handlerInput.requestEnvelope.request.intent.name === 'ClassSignUp'
+            || handlerInput.requestEnvelope.request.intent.name === 'FinancialAidApplication'
         );
     },
     handle(handlerInput) {
