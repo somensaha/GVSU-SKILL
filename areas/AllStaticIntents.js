@@ -23,6 +23,9 @@ const AllStaticIntents = {
             || handlerInput.requestEnvelope.request.intent.name === 'ClassRegistration'
             || handlerInput.requestEnvelope.request.intent.name === 'ClassSignUp'
             || handlerInput.requestEnvelope.request.intent.name === 'FinancialAidApplication'
+            || handlerInput.requestEnvelope.request.intent.name === 'GVSUEBill'
+            || handlerInput.requestEnvelope.request.intent.name === 'HowTrackService'
+            || handlerInput.requestEnvelope.request.intent.name === 'WhereTrackService'
         );
     },
     handle(handlerInput) {
