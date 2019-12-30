@@ -347,7 +347,7 @@ module.exports = {
 				if(data) {
                     console.log('data.Items', data.Items);
 					data.Items.forEach(function(itemdata) {
-                        console.log("itemslot",itemdata.Slot.values);
+                        // console.log("itemslot",itemdata.Slot.values);
                         //console.log("itemslot",JSON.stringify(itemdata.Slot.values));
                         const arraySlot = itemdata.Slot.values;
                         //console.log('array slottt', arraySlot);
@@ -928,7 +928,7 @@ module.exports = {
 				if(data) {
                     console.log('data.Items', data.Items);
 					data.Items.forEach(function(itemdata) {
-                        console.log("itemslot",itemdata.Slot.values);
+                        // console.log("itemslot",itemdata.Slot.values);
                         //console.log("itemslot",JSON.stringify(itemdata.Slot.values));
                         const arraySlot = itemdata.Slot.values;
                         //console.log('array slottt', arraySlot);

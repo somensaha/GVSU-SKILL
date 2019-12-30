@@ -55,16 +55,28 @@ const ContactInfo = {
                             }
                             return allFuctions.formSpeech(handlerInput, obj);
                         } else {
+                            let suggArr = [];
+                            let build = buildingname.replace(/[^A-Z0-9]+/ig,'').toLowerCase();
+                            res.forEach((slot, i) => {
+                                slot.Slot.values.forEach((val, i) => {
+                                    if(val != build){
+                                        suggArr.push(val);
+                                    }
+                                    // console.log('=====multislot response=======', val);
+                                });
+                            });
+                            // console.log('=====multislot suggArr=======', suggArr);
                             if (buildingname) {
-                                return allFuctions.suggestionsFromJson({shuffle: true, slot: buildingname, intent:intentName}).then((suggestionslot) => {
-                                    var speechText = 'I can assist you with the '+ suggestionslot.join(' or ') +  '. Which one would you like to know?';
+                                // return allFuctions.suggestionsFromJson({shuffle: true, slot: buildingname, intent:intentName}).then((suggestionslot) => {
+                                    // var speechText = 'I can assist you with the '+ suggestionslot.join(' or ') +  '. Which one would you like to know?';
+                                    var speechText = 'I can assist you with the '+ suggArr.join(' or ') +  '. Which one would you like to know?';
                                     obj = {
                                         speechText: speechText,
                                         displayStandardCardText: speechText,
                                         addElicitSlotDirective: 'contacttype'
                                     }
                                     return allFuctions.formSpeech(handlerInput, obj);
-                                });
+                                // });
                             }
                         }
                     } else {
@@ -199,7 +211,103 @@ const OpenCloseTime = {
     }
 }
 
+const GVSUServiceMultiSlot = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest' 
+            && handlerInput.requestEnvelope.request.intent.name === 'GVSUServiceMultiSlot'
+    },
+    handle(handlerInput) {
+        console.log("DefinedSlotIntents Handler::", handlerInput.requestEnvelope.request.intent.name);
+        var intentName = handlerInput.requestEnvelope.request.intent.name;
+        var servicename = allFuctions.getDialogSlotValue(handlerInput.requestEnvelope.request.intent.slots.servicename);
+        var buildingname = allFuctions.getDialogSlotValue(handlerInput.requestEnvelope.request.intent.slots.buildingname);
+        console.log("slots in GVSUServiceMultiSlot time are::",buildingname, servicename);
+        
+        let obj = null;
+
+
+        try {
+            var params = {
+                TableName : "AskGVSUStatic"
+            };
+            let speechText = '';
+
+            if (buildingname) {
+                let slots = [buildingname, servicename];
+                let convJSON = {};
+                console.log('Slots are::', JSON.stringify(slots));
+                let FilterExpression = 'IntentName = :IntentName';
+                let ExpressionAttributeValues = {':IntentName': 'GVSUServiceMultiSlot'};
+                slots.forEach((slot, i) => {
+                    if (slot) {
+                        FilterExpression = FilterExpression + ' AND contains(Slot,:Slot'+i+')';
+                        ExpressionAttributeValues[':Slot'+i] = slot.replace(/[^A-Z0-9]+/ig,'').toLowerCase();
+                    }
+                });
+                var dynamodbScanParams = {TableName: "AskGVSUStatic", FilterExpression: FilterExpression, ExpressionAttributeValues: ExpressionAttributeValues};
+                return allFuctions.contactInfodynamodbScan(dynamodbScanParams).then((res) => {
+                    if (res.length !== 0) {
+                        if (res.length === 1) {
+                            var speechText = res[0].Answer;
+                            obj = {
+                                speechText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                displayText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                repromptSpeechText: allFuctions.listenspeech,
+                                sessionEnd: false
+                            }
+                            return allFuctions.formSpeech(handlerInput, obj);
+                        } else {
+                            if (buildingname) {
+                                return allFuctions.suggestionsFromJson({shuffle: true, slot: buildingname, intent:intentName}).then((suggestionslot) => {
+                                    var speechText = 'I can assist you with the '+ suggestionslot.join(' or ') +  '. Which one would you like to know?';
+                                    obj = {
+                                        speechText: speechText,
+                                        displayStandardCardText: speechText,
+                                        addElicitSlotDirective: 'servicename'
+                                    }
+                                    return allFuctions.formSpeech(handlerInput, obj);
+                                });
+                            }
+                        }
+                    } else {
+                        var speechText = 'I could not find any timing details.';
+                            obj = {
+                                speechText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                displayText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                repromptSpeechText: allFuctions.listenspeech,
+                                sessionEnd: false
+                            }
+                        return allFuctions.formSpeech(handlerInput, obj);                        
+                    }
+                }).catch((err) => {
+                    console.log('ContactInfo Error::', err);
+                    var speechText = 'I could not find any timing details.';
+                    obj = {
+                        speechText: speechText + ' ' + allFuctions.repromptSpeechText,
+                        displayText: speechText + ' ' + allFuctions.repromptSpeechText,
+                        repromptSpeechText: allFuctions.listenspeech,
+                        sessionEnd: false
+                    }
+                    return allFuctions.formSpeech(handlerInput, obj);       
+                })
+            } else {
+                speechText = 'Which office service details you are looking for?'
+                obj = {
+                    speechText: speechText,
+                    displayStandardCardText: speechText,
+                    addElicitSlotDirective: 'buildingname'                        
+                }
+                return allFuctions.formSpeech(handlerInput, obj);
+            }
+        } catch (error) {
+             console.log(error);   
+        }
+
+    }
+}
+
 module.exports = [ 
     ContactInfo,
-    OpenCloseTime
+    OpenCloseTime,
+    GVSUServiceMultiSlot
 ];
