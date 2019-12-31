@@ -1,4 +1,5 @@
 const allFuctions = require('../functions');
+var request = require('request');
 
 const ContactInfo = {
     canHandle(handlerInput) {
@@ -20,64 +21,56 @@ const ContactInfo = {
             };
             let speechText = '';
 
-            // if (handlerInput.requestEnvelope.request.intent.confirmationStatus === 'DENIED') {
-            //     obj = {
-            //         speechText: allFuctions.YesPrompt,
-            //         displayText: allFuctions.YesPrompt,
-            //         repromptSpeechText: allFuctions.listenspeech,
-            //         sessionEnd: false
-            //     }
-            //     return allFuctions.formSpeech(handlerInput, obj);
-            // }
-
             if (buildingname) {
                 let slots = [buildingname, contacttype];
                 let convJSON = {};
                 console.log('Slots are::', JSON.stringify(slots));
-                let FilterExpression = 'IntentName = :IntentName';
-                let ExpressionAttributeValues = {':IntentName': 'ContactInfo'};
-                slots.forEach((slot, i) => {
-                    if (slot) {
-                        FilterExpression = FilterExpression + ' AND contains(Slot,:Slot'+i+')';
-                        ExpressionAttributeValues[':Slot'+i] = slot.replace(/[^A-Z0-9]+/ig,'').toLowerCase();
-                    }
-                });
-                var dynamodbScanParams = {TableName: "AskGVSUStatic", FilterExpression: FilterExpression, ExpressionAttributeValues: ExpressionAttributeValues};
-                return allFuctions.contactInfodynamodbScan(dynamodbScanParams).then((res) => {
+                
+                //real time api call instead of DB call 
+                return allFuctions.callPeopleFinder(buildingname).then((res) => {
+                    // console.log('people res ============================================='+res);
                     if (res.length !== 0) {
                         if (res.length === 1) {
-                            var speechText = res[0].Answer;
+                            if(contacttype){
+                                var speechText = res[0][contacttype];
+                                // console.log('people res ==speechText==========================================='+speechText);
+                                // var speechText = res[0].Answer;
+                                obj = {
+                                    speechText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                    displayText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                    repromptSpeechText: allFuctions.listenspeech,
+                                    sessionEnd: false
+                                }
+                                return allFuctions.formSpeech(handlerInput, obj);
+                            }else{
+                                console.log(Object.keys(res[0]));
+                                Object.keys(res[0]).forEach((key, i) => {
+                                    console.log('=======================', res[0][key]);
+                                    // suggArr.push(arrvalues.name);
+                                });
+                                let sugg = res[0][email] ? ' email ' : res[0][address] ? ',or address ' : res[0][phone] ? ',or phone ' : '';
+                                var speechText = 'I can assist you with the '+ sugg +  '. Which one would you like to know?';
+                                obj = {
+                                    speechText: speechText,
+                                    displayStandardCardText: speechText,
+                                    addElicitSlotDirective: 'contacttype'
+                                }
+                                return allFuctions.formSpeech(handlerInput, obj);
+                            }
+                            
+                        }else {
+                            let suggArr = [];
+                            // let build = buildingname.replace(/[^A-Z0-9]+/ig,'').toLowerCase();
+                            res.forEach((arrvalues, i) => {
+                                suggArr.push(arrvalues.name);
+                            });
+                            var speechText = 'I can assist you with the '+ suggArr.join(', or, ') +  '. Which one would you like to know?';
                             obj = {
-                                speechText: speechText + ' ' + allFuctions.repromptSpeechText,
-                                displayText: speechText + ' ' + allFuctions.repromptSpeechText,
-                                repromptSpeechText: allFuctions.listenspeech,
-                                sessionEnd: false
+                                speechText: speechText,
+                                displayStandardCardText: speechText,
+                                addElicitSlotDirective: 'buildingname'
                             }
                             return allFuctions.formSpeech(handlerInput, obj);
-                        } else {
-                            let suggArr = [];
-                            let build = buildingname.replace(/[^A-Z0-9]+/ig,'').toLowerCase();
-                            res.forEach((slot, i) => {
-                                slot.Slot.values.forEach((val, i) => {
-                                    if(val != build){
-                                        suggArr.push(val);
-                                    }
-                                    // console.log('=====multislot response=======', val);
-                                });
-                            });
-                            // console.log('=====multislot suggArr=======', suggArr);
-                            if (buildingname) {
-                                // return allFuctions.suggestionsFromJson({shuffle: true, slot: buildingname, intent:intentName}).then((suggestionslot) => {
-                                    // var speechText = 'I can assist you with the '+ suggestionslot.join(' or ') +  '. Which one would you like to know?';
-                                    var speechText = 'I can assist you with the '+ suggArr.join(' or ') +  '. Which one would you like to know?';
-                                    obj = {
-                                        speechText: speechText,
-                                        displayStandardCardText: speechText,
-                                        addElicitSlotDirective: 'contacttype'
-                                    }
-                                    return allFuctions.formSpeech(handlerInput, obj);
-                                // });
-                            }
                         }
                     } else {
                         var speechText = 'I could not find any contact details.';
@@ -164,7 +157,7 @@ const OpenCloseTime = {
                         } else {
                             if (buildingname) {
                                 return allFuctions.suggestionsFromJson({shuffle: true, slot: buildingname, intent:intentName}).then((suggestionslot) => {
-                                    var speechText = 'I can assist you with the '+ suggestionslot.join(' or ') +  '. Which one would you like to know?';
+                                    var speechText = 'I can assist you with the '+ suggestionslot.join(' or, ') +  '. Which one would you like to know?';
                                     obj = {
                                         speechText: speechText,
                                         displayStandardCardText: speechText,

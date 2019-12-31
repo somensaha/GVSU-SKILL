@@ -11,6 +11,7 @@ const stringSimilarity = require('string-similarity');
 const {removeStopwords} = require('stopword');
 
 
+
 module.exports = {
     getColumn: "Answer",
     dayNames: {0:'Sunday',1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday',6:'Saturday'},
@@ -1079,6 +1080,22 @@ module.exports = {
                 user = handlerInput.attributesManager.getSessionAttributes('GAMESTATE').GAMESTATE;
                 resolve(user);
             }
+        });
+    },
+
+    callPeopleFinder : function(buildingname) {
+        console.log('callPeopleFinder buildingname : ',buildingname);
+        return new Promise((resolve, rej) => {
+            let url = process.env.REALTIME_SERVICE_URL+buildingname;
+            request(url, function (error, response, body) {
+                if (error) {
+                    console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+                    resolve(null);
+                } else if (!error && response.statusCode == 200) {
+                    console.log(JSON.parse(body).data) ;
+                    resolve(JSON.parse(body).data);
+                }                
+            });
         });
     }
 }
