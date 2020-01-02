@@ -52,21 +52,45 @@ const ContactInfo = {
                                     return allFuctions.formSpeech(handlerInput, obj);
                                 });                                
                             }else{
+                                let suggArr = [];
                                 console.log(Object.keys(res[0]));
                                 Object.keys(res[0]).forEach((key, i) => {
-                                    console.log('=======================', res[0][key]);
-                                    // suggArr.push(arrvalues.name);
+                                    // console.log('=======================', res[0][key], ' pp ', !res[0][key]);
+                                    if(res[0][key] && (key != 'name')){
+                                        suggArr.push(key);
+                                    }
                                 });
-                                let sugg = res[0][email] ? ' email ' : res[0][address] ? ',or address ' : res[0][phone] ? ',or phone ' : '';
-                                var speechText = 'I can assist you with the '+ sugg +  '. Which one would you like to know?';
-                                obj = {
-                                    speechText: speechText,
-                                    displayStandardCardText: speechText,
-                                    addElicitSlotDirective: 'contacttype'
-                                }
-                                return allFuctions.formSpeech(handlerInput, obj);
-                            }
-                            
+                                console.log('suggArr :: ', suggArr.length, ' === ', suggArr);
+                                if(suggArr.length === 1 ){
+                                    contactBy = suggArr[0];
+                                    var buildData = res[0][contactBy];
+                                    // buildData = '616-331-2229';  //rapinbe@gvsu.edu';
+                                    var splitmail = (contactBy == 'email') ? buildData.trim().split('').join(' ').replace('.','dot').replace('@', 'at')+'">' : '';
+                                    // console.log('splitmail ========== ',splitmail);
+                                    buildData = (contactBy == 'email') ? '<sub alias="'+ splitmail + buildData +'</sub>' : buildData;
+                                    //get the ans from DB based on 
+                                    return allFuctions.contactInfodynamodbScanForAns(contactBy).then((dbresp) => {
+                                        var speechText = dbresp.Answer;
+                                        speechText = speechText.replace('{ans1}', buildingname).replace('{ans2}', buildData);
+                                        console.log('people res ==speechText==========================================='+speechText);
+                                        obj = {
+                                            speechText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                            displayText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                            repromptSpeechText: allFuctions.listenspeech,
+                                            sessionEnd: false
+                                        }
+                                        return allFuctions.formSpeech(handlerInput, obj);
+                                    });  
+                                }else{
+                                    var speechText = 'I can assist you with the '+ suggArr.join(', or, ') +  '. Which one would you like to know?';
+                                    obj = {
+                                        speechText: speechText,
+                                        displayStandardCardText: speechText,
+                                        addElicitSlotDirective: 'contacttype'
+                                    }
+                                    return allFuctions.formSpeech(handlerInput, obj);
+                                }                                
+                            }                            
                         }else {
                             let suggArr = [];
                             // let build = buildingname.replace(/[^A-Z0-9]+/ig,'').toLowerCase();
