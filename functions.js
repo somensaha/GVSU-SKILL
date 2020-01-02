@@ -383,6 +383,7 @@ module.exports = {
     },
 
     DynamoDBScan: function(slot = null, intentName = null, tableName = null) {
+        console.log('slot = ', slot, ',intentName = ', intentName, ',tableName = ', tableName);
         return new Promise((resolve, reject) => {
             var params = {
                 TableName: tableName,
@@ -1096,6 +1097,36 @@ module.exports = {
                     resolve(JSON.parse(body).data);
                 }                
             });
+        });
+    },  
+    
+    contactInfodynamodbScanForAns : function(slot) {
+        console.log('slot = ', slot);
+        return new Promise((resolve, reject) => {
+            var params = {
+                TableName: this.StaticTable,
+                FilterExpression: "#slot = :slotval and #intent = :intentval",
+                ExpressionAttributeNames: {
+                    "#slot": "Slot",
+                    "#intent":"IntentName"
+                },
+                ExpressionAttributeValues: { ":slotval": slot ,":intentval":'ContactInfo'}
+            };
+            
+			// Scan DynamoDB
+			var docClient = new AWS.DynamoDB.DocumentClient();
+			docClient.scan(params, (err, data) => {
+				if(err) {
+                    console.log('dynamodb scan err =>' + JSON.stringify(err))
+                    resolve(null);                    
+                }
+                console.log('dynamodb scan res =>' + JSON.stringify(data))                
+				if(data && data.Items.length > 0) {
+                    resolve(data.Items[0]);
+				} else {
+                    resolve(null);
+                }
+			});
         });
     }
 }

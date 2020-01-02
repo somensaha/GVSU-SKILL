@@ -32,16 +32,25 @@ const ContactInfo = {
                     if (res.length !== 0) {
                         if (res.length === 1) {
                             if(contacttype){
-                                var speechText = res[0][contacttype];
-                                // console.log('people res ==speechText==========================================='+speechText);
-                                // var speechText = res[0].Answer;
-                                obj = {
-                                    speechText: speechText + ' ' + allFuctions.repromptSpeechText,
-                                    displayText: speechText + ' ' + allFuctions.repromptSpeechText,
-                                    repromptSpeechText: allFuctions.listenspeech,
-                                    sessionEnd: false
-                                }
-                                return allFuctions.formSpeech(handlerInput, obj);
+                                var buildData = res[0][contacttype];
+                                // buildData = '616-331-2229';  //rapinbe@gvsu.edu';
+                                // contacttype == 'email';
+                                var splitmail = (contacttype == 'email') ? buildData.trim().split('').join(' ').replace('.','dot').replace('@', 'at')+'">' : '';
+                                // console.log('splitmail ========== ',splitmail);
+                                buildData = (contacttype == 'email') ? '<sub alias="'+ splitmail + buildData +'</sub>' : buildData;
+                                //get the ans from DB based on 
+                                return allFuctions.contactInfodynamodbScanForAns(contacttype).then((dbresp) => {
+                                    var speechText = dbresp.Answer;
+                                    speechText = speechText.replace('{ans1}', buildingname).replace('{ans2}', buildData);
+                                    console.log('people res ==speechText==========================================='+speechText);
+                                    obj = {
+                                        speechText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                        displayText: speechText + ' ' + allFuctions.repromptSpeechText,
+                                        repromptSpeechText: allFuctions.listenspeech,
+                                        sessionEnd: false
+                                    }
+                                    return allFuctions.formSpeech(handlerInput, obj);
+                                });                                
                             }else{
                                 console.log(Object.keys(res[0]));
                                 Object.keys(res[0]).forEach((key, i) => {
