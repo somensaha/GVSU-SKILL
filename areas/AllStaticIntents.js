@@ -26,6 +26,8 @@ const AllStaticIntents = {
             || handlerInput.requestEnvelope.request.intent.name === 'GVSUEBill'
             || handlerInput.requestEnvelope.request.intent.name === 'HowTrackService'
             || handlerInput.requestEnvelope.request.intent.name === 'WhereTrackService'
+            || handlerInput.requestEnvelope.request.intent.name === 'ResetProxyPassword'
+            || handlerInput.requestEnvelope.request.intent.name === 'StudenAccountRefund'
         );
     },
     handle(handlerInput) {
