@@ -1147,25 +1147,39 @@ module.exports = {
                     if (res.length === 1) {
                         if(contacttype){
                             var buildData = res[0][contacttype];
+                            console.log('=====contacttype buildData=====', buildData);
                             // buildData = '616-331-2229';  //rapinbe@gvsu.edu';
                             // contacttype == 'email';
-                            var splitmail = (contacttype == 'email') ? buildData.trim().split('').join(' ').replace('.','dot').replace('@', 'at')+'">' : '';
-                            // console.log('splitmail ========== ',splitmail);
-                            buildData = (contacttype == 'email') ? '<sub alias="'+ splitmail + buildData +'</sub>' : buildData;
-                            //get the ans from DB based on 
-                            return this.contactInfodynamodbScanForAns(contacttype).then((dbresp) => {
-                                var speechText = dbresp.Answer;
-                                speechText = speechText.replace('{ans1}', buildingname).replace('{ans2}', buildData);
-                                console.log('people res ==speechText==========================================='+speechText);
+                            if (typeof buildData != 'undefined' && buildData != null){
+                                var splitmail = (contacttype == 'email') ? buildData.trim().split('').join(' ').replace('.','dot').replace('@', 'at')+'">' : '';
+                                // console.log('splitmail ========== ',splitmail);
+                                buildData = (contacttype == 'email') ? '<sub alias="'+ splitmail + buildData +'</sub>' : buildData;
+                                //get the ans from DB based on 
+                                return this.contactInfodynamodbScanForAns(contacttype).then((dbresp) => {
+                                    var speechText = dbresp.Answer;
+                                    speechText = speechText.replace('{ans1}', buildingname).replace('{ans2}', buildData);
+                                    console.log('people res ==speechText==========================================='+speechText);
+                                    obj = {
+                                        speechText: speechText + ' ' + this.repromptSpeechText,
+                                        displayText: speechText + ' ' + this.repromptSpeechText,
+                                        repromptSpeechText: this.listenspeech,
+                                        sessionEnd: false
+                                    }
+                                    // return this.formSpeech(handlerInput, obj);
+                                    resolve(this.formSpeech(handlerInput, obj));
+                                });
+                            } else {
+                                var speechText = 'I could not find any '+ contacttype +  '. Which one would you like to know?';
                                 obj = {
                                     speechText: speechText + ' ' + this.repromptSpeechText,
                                     displayText: speechText + ' ' + this.repromptSpeechText,
                                     repromptSpeechText: this.listenspeech,
                                     sessionEnd: false
                                 }
-                                // return this.formSpeech(handlerInput, obj);
-                                resolve(this.formSpeech(handlerInput, obj));
-                            });                                
+                                // return this.formSpeech(handlerInput, obj);  
+                                resolve(this.formSpeech(handlerInput, obj));  
+                            }
+                                                            
                         }else{
                             let suggArr = [];
                             console.log(Object.keys(res[0]));
@@ -1179,24 +1193,38 @@ module.exports = {
                             if(suggArr.length === 1 ){
                                 contactBy = suggArr[0];
                                 var buildData = res[0][contactBy];
+                                console.log('=====contacttype else buildData=====', buildData);
                                 // buildData = '616-331-2229';  //rapinbe@gvsu.edu';
-                                var splitmail = (contactBy == 'email') ? buildData.trim().split('').join(' ').replace('.','dot').replace('@', 'at')+'">' : '';
-                                // console.log('splitmail ========== ',splitmail);
-                                buildData = (contactBy == 'email') ? '<sub alias="'+ splitmail + buildData +'</sub>' : buildData;
-                                //get the ans from DB based on 
-                                return this.contactInfodynamodbScanForAns(contactBy).then((dbresp) => {
-                                    var speechText = dbresp.Answer;
-                                    speechText = speechText.replace('{ans1}', buildingname).replace('{ans2}', buildData);
-                                    console.log('people res ==speechText==========================================='+speechText);
+                                if (typeof buildData != 'undefined' && buildData != null){
+                                    var splitmail = (contactBy == 'email') ? buildData.trim().split('').join(' ').replace('.','dot').replace('@', 'at')+'">' : '';
+                                    // console.log('splitmail ========== ',splitmail);
+                                    buildData = (contactBy == 'email') ? '<sub alias="'+ splitmail + buildData +'</sub>' : buildData;
+                                    //get the ans from DB based on 
+                                    return this.contactInfodynamodbScanForAns(contactBy).then((dbresp) => {
+                                        var speechText = dbresp.Answer;
+                                        speechText = speechText.replace('{ans1}', buildingname).replace('{ans2}', buildData);
+                                        console.log('people res ==speechText==========================================='+speechText);
+                                        obj = {
+                                            speechText: speechText + ' ' + this.repromptSpeechText,
+                                            displayText: speechText + ' ' + this.repromptSpeechText,
+                                            repromptSpeechText: this.listenspeech,
+                                            sessionEnd: false
+                                        }
+                                        // return this.formSpeech(handlerInput, obj);
+                                        resolve(this.formSpeech(handlerInput, obj));
+                                    }); 
+                                } else {
+                                    // var speechText = 'I could not find any contact details.';
+                                    var speechText = 'I can assist you with the '+ suggArr.join(', or, ') +  '. Which one would you like to know?';
                                     obj = {
                                         speechText: speechText + ' ' + this.repromptSpeechText,
                                         displayText: speechText + ' ' + this.repromptSpeechText,
                                         repromptSpeechText: this.listenspeech,
                                         sessionEnd: false
                                     }
-                                    // return this.formSpeech(handlerInput, obj);
-                                    resolve(this.formSpeech(handlerInput, obj));
-                                });  
+                                    // return this.formSpeech(handlerInput, obj);  
+                                    resolve(this.formSpeech(handlerInput, obj));                      
+                                }                                 
                             }else{
                                 var speechText = 'I can assist you with the '+ suggArr.join(', or, ') +  '. Which one would you like to know?';
                                 obj = {
