@@ -1130,14 +1130,14 @@ module.exports = {
         });
     },
 
-    contactInfoFn : function(handlerInput, slots){
+    contactInfoFn : function(handlerInput, slots, callType){
         console.log('slots from contactInfoFn = ', slots);
         return new Promise((resolve, reject) => {
             // let slots = [buildingname, contacttype];
             // let slots = slotArr;
             let convJSON = {};
             console.log('Slots are::', JSON.stringify(slots));
-            var buildingname = slots[0];
+            var buildingname = slots[0];        //this could be personnane as well depen on caller scope
             var contacttype = slots[1];
             console.log("slots in contactInfoFn are::",buildingname, contacttype);
             //real time api call instead of DB call 
@@ -1169,7 +1169,7 @@ module.exports = {
                                     resolve(this.formSpeech(handlerInput, obj));
                                 });
                             } else {
-                                var speechText = 'I could not find any '+ contacttype +  '. Which one would you like to know?';
+                                var speechText = 'I could not find any '+ contacttype +  '.';
                                 obj = {
                                     speechText: speechText + ' ' + this.repromptSpeechText,
                                     displayText: speechText + ' ' + this.repromptSpeechText,
@@ -1236,7 +1236,7 @@ module.exports = {
                                 resolve(this.formSpeech(handlerInput, obj));
                             }                                
                         }                            
-                    }else {
+                    } else {
                         let suggArr = [];
                         // let build = buildingname.replace(/[^A-Z0-9]+/ig,'').toLowerCase();
                         res.forEach((arrvalues, i) => {
@@ -1246,7 +1246,7 @@ module.exports = {
                         obj = {
                             speechText: speechText,
                             displayStandardCardText: speechText,
-                            addElicitSlotDirective: 'buildingname'
+                            addElicitSlotDirective: callType === '1' ? 'buildingname' : 'personname'
                         }
                         // return this.formSpeech(handlerInput, obj);
                         resolve(this.formSpeech(handlerInput, obj));

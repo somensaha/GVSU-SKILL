@@ -23,13 +23,13 @@ const ContactInfo = {
             let speechText = '';
 
             if (buildingname) {
-                var slots = [buildingname, contacttype];
+                var slots = [buildingname, contacttype, '1'];
                 return allFuctions.contactInfoFn(handlerInput, slots).then((res) => {
                     return res;
                 });
             } else if(personname){     //if personname exist
                 console.log('personname is ', personname);
-                var slots = [personname, contacttype];
+                var slots = [personname, contacttype, '2'];
                 return allFuctions.contactInfoFn(handlerInput, slots).then((res) => {
                     return res;
                 });
