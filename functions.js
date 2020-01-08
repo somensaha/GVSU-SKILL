@@ -1128,5 +1128,124 @@ module.exports = {
                 }
 			});
         });
+    },
+
+    contactInfoFn : function(handlerInput, slots){
+        console.log('slots from contactInfoFn = ', slots);
+        return new Promise((resolve, reject) => {
+            // let slots = [buildingname, contacttype];
+            // let slots = slotArr;
+            let convJSON = {};
+            console.log('Slots are::', JSON.stringify(slots));
+            var buildingname = slots[0];
+            var contacttype = slots[1];
+            console.log("slots in contactInfoFn are::",buildingname, contacttype);
+            //real time api call instead of DB call 
+            return this.callPeopleFinder(buildingname).then((res) => {
+                // console.log('people res ============================================='+res);
+                if (res.length !== 0) {
+                    if (res.length === 1) {
+                        if(contacttype){
+                            var buildData = res[0][contacttype];
+                            // buildData = '616-331-2229';  //rapinbe@gvsu.edu';
+                            // contacttype == 'email';
+                            var splitmail = (contacttype == 'email') ? buildData.trim().split('').join(' ').replace('.','dot').replace('@', 'at')+'">' : '';
+                            // console.log('splitmail ========== ',splitmail);
+                            buildData = (contacttype == 'email') ? '<sub alias="'+ splitmail + buildData +'</sub>' : buildData;
+                            //get the ans from DB based on 
+                            return this.contactInfodynamodbScanForAns(contacttype).then((dbresp) => {
+                                var speechText = dbresp.Answer;
+                                speechText = speechText.replace('{ans1}', buildingname).replace('{ans2}', buildData);
+                                console.log('people res ==speechText==========================================='+speechText);
+                                obj = {
+                                    speechText: speechText + ' ' + this.repromptSpeechText,
+                                    displayText: speechText + ' ' + this.repromptSpeechText,
+                                    repromptSpeechText: this.listenspeech,
+                                    sessionEnd: false
+                                }
+                                // return this.formSpeech(handlerInput, obj);
+                                resolve(this.formSpeech(handlerInput, obj));
+                            });                                
+                        }else{
+                            let suggArr = [];
+                            console.log(Object.keys(res[0]));
+                            Object.keys(res[0]).forEach((key, i) => {
+                                // console.log('=======================', res[0][key], ' pp ', !res[0][key]);
+                                if(res[0][key] && (key != 'name')){
+                                    suggArr.push(key);
+                                }
+                            });
+                            console.log('suggArr :: ', suggArr.length, ' === ', suggArr);
+                            if(suggArr.length === 1 ){
+                                contactBy = suggArr[0];
+                                var buildData = res[0][contactBy];
+                                // buildData = '616-331-2229';  //rapinbe@gvsu.edu';
+                                var splitmail = (contactBy == 'email') ? buildData.trim().split('').join(' ').replace('.','dot').replace('@', 'at')+'">' : '';
+                                // console.log('splitmail ========== ',splitmail);
+                                buildData = (contactBy == 'email') ? '<sub alias="'+ splitmail + buildData +'</sub>' : buildData;
+                                //get the ans from DB based on 
+                                return this.contactInfodynamodbScanForAns(contactBy).then((dbresp) => {
+                                    var speechText = dbresp.Answer;
+                                    speechText = speechText.replace('{ans1}', buildingname).replace('{ans2}', buildData);
+                                    console.log('people res ==speechText==========================================='+speechText);
+                                    obj = {
+                                        speechText: speechText + ' ' + this.repromptSpeechText,
+                                        displayText: speechText + ' ' + this.repromptSpeechText,
+                                        repromptSpeechText: this.listenspeech,
+                                        sessionEnd: false
+                                    }
+                                    // return this.formSpeech(handlerInput, obj);
+                                    resolve(this.formSpeech(handlerInput, obj));
+                                });  
+                            }else{
+                                var speechText = 'I can assist you with the '+ suggArr.join(', or, ') +  '. Which one would you like to know?';
+                                obj = {
+                                    speechText: speechText,
+                                    displayStandardCardText: speechText,
+                                    addElicitSlotDirective: 'contacttype'
+                                }
+                                // return this.formSpeech(handlerInput, obj);
+                                resolve(this.formSpeech(handlerInput, obj));
+                            }                                
+                        }                            
+                    }else {
+                        let suggArr = [];
+                        // let build = buildingname.replace(/[^A-Z0-9]+/ig,'').toLowerCase();
+                        res.forEach((arrvalues, i) => {
+                            suggArr.push(arrvalues.name);
+                        });
+                        var speechText = 'I can assist you with the '+ suggArr.join(', or, ') +  '. Which one would you like to know?';
+                        obj = {
+                            speechText: speechText,
+                            displayStandardCardText: speechText,
+                            addElicitSlotDirective: 'buildingname'
+                        }
+                        // return this.formSpeech(handlerInput, obj);
+                        resolve(this.formSpeech(handlerInput, obj));
+                    }
+                } else {
+                    var speechText = 'I could not find any contact details.';
+                        obj = {
+                            speechText: speechText + ' ' + this.repromptSpeechText,
+                            displayText: speechText + ' ' + this.repromptSpeechText,
+                            repromptSpeechText: this.listenspeech,
+                            sessionEnd: false
+                        }
+                    // return this.formSpeech(handlerInput, obj);  
+                    resolve(this.formSpeech(handlerInput, obj));                      
+                }
+            }).catch((err) => {
+                console.log('ContactInfo Error::', err);
+                var speechText = 'I could not find any contact details.';
+                obj = {
+                    speechText: speechText + ' ' + this.repromptSpeechText,
+                    displayText: speechText + ' ' + this.repromptSpeechText,
+                    repromptSpeechText: this.listenspeech,
+                    sessionEnd: false
+                }
+                // return this.formSpeech(handlerInput, obj);       
+                resolve(this.formSpeech(handlerInput, obj));
+            })
+        });
     }
 }

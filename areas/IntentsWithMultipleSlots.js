@@ -11,7 +11,8 @@ const ContactInfo = {
         var intentName = handlerInput.requestEnvelope.request.intent.name;
         var contacttype = allFuctions.getDialogSlotValue(handlerInput.requestEnvelope.request.intent.slots.contacttype);
         var buildingname = allFuctions.getDialogSlotValue(handlerInput.requestEnvelope.request.intent.slots.buildingname);
-        console.log("slots in contact info are::",buildingname, contacttype);
+        var personname = handlerInput.requestEnvelope.request.intent.slots.personname.value;    //built-in slot
+        console.log("slots in contact info are::",buildingname, contacttype, personname);
         
         let obj = null;
 
@@ -22,111 +23,17 @@ const ContactInfo = {
             let speechText = '';
 
             if (buildingname) {
-                let slots = [buildingname, contacttype];
-                let convJSON = {};
-                console.log('Slots are::', JSON.stringify(slots));
-                
-                //real time api call instead of DB call 
-                return allFuctions.callPeopleFinder(buildingname).then((res) => {
-                    // console.log('people res ============================================='+res);
-                    if (res.length !== 0) {
-                        if (res.length === 1) {
-                            if(contacttype){
-                                var buildData = res[0][contacttype];
-                                // buildData = '616-331-2229';  //rapinbe@gvsu.edu';
-                                // contacttype == 'email';
-                                var splitmail = (contacttype == 'email') ? buildData.trim().split('').join(' ').replace('.','dot').replace('@', 'at')+'">' : '';
-                                // console.log('splitmail ========== ',splitmail);
-                                buildData = (contacttype == 'email') ? '<sub alias="'+ splitmail + buildData +'</sub>' : buildData;
-                                //get the ans from DB based on 
-                                return allFuctions.contactInfodynamodbScanForAns(contacttype).then((dbresp) => {
-                                    var speechText = dbresp.Answer;
-                                    speechText = speechText.replace('{ans1}', buildingname).replace('{ans2}', buildData);
-                                    console.log('people res ==speechText==========================================='+speechText);
-                                    obj = {
-                                        speechText: speechText + ' ' + allFuctions.repromptSpeechText,
-                                        displayText: speechText + ' ' + allFuctions.repromptSpeechText,
-                                        repromptSpeechText: allFuctions.listenspeech,
-                                        sessionEnd: false
-                                    }
-                                    return allFuctions.formSpeech(handlerInput, obj);
-                                });                                
-                            }else{
-                                let suggArr = [];
-                                console.log(Object.keys(res[0]));
-                                Object.keys(res[0]).forEach((key, i) => {
-                                    // console.log('=======================', res[0][key], ' pp ', !res[0][key]);
-                                    if(res[0][key] && (key != 'name')){
-                                        suggArr.push(key);
-                                    }
-                                });
-                                console.log('suggArr :: ', suggArr.length, ' === ', suggArr);
-                                if(suggArr.length === 1 ){
-                                    contactBy = suggArr[0];
-                                    var buildData = res[0][contactBy];
-                                    // buildData = '616-331-2229';  //rapinbe@gvsu.edu';
-                                    var splitmail = (contactBy == 'email') ? buildData.trim().split('').join(' ').replace('.','dot').replace('@', 'at')+'">' : '';
-                                    // console.log('splitmail ========== ',splitmail);
-                                    buildData = (contactBy == 'email') ? '<sub alias="'+ splitmail + buildData +'</sub>' : buildData;
-                                    //get the ans from DB based on 
-                                    return allFuctions.contactInfodynamodbScanForAns(contactBy).then((dbresp) => {
-                                        var speechText = dbresp.Answer;
-                                        speechText = speechText.replace('{ans1}', buildingname).replace('{ans2}', buildData);
-                                        console.log('people res ==speechText==========================================='+speechText);
-                                        obj = {
-                                            speechText: speechText + ' ' + allFuctions.repromptSpeechText,
-                                            displayText: speechText + ' ' + allFuctions.repromptSpeechText,
-                                            repromptSpeechText: allFuctions.listenspeech,
-                                            sessionEnd: false
-                                        }
-                                        return allFuctions.formSpeech(handlerInput, obj);
-                                    });  
-                                }else{
-                                    var speechText = 'I can assist you with the '+ suggArr.join(', or, ') +  '. Which one would you like to know?';
-                                    obj = {
-                                        speechText: speechText,
-                                        displayStandardCardText: speechText,
-                                        addElicitSlotDirective: 'contacttype'
-                                    }
-                                    return allFuctions.formSpeech(handlerInput, obj);
-                                }                                
-                            }                            
-                        }else {
-                            let suggArr = [];
-                            // let build = buildingname.replace(/[^A-Z0-9]+/ig,'').toLowerCase();
-                            res.forEach((arrvalues, i) => {
-                                suggArr.push(arrvalues.name);
-                            });
-                            var speechText = 'I can assist you with the '+ suggArr.join(', or, ') +  '. Which one would you like to know?';
-                            obj = {
-                                speechText: speechText,
-                                displayStandardCardText: speechText,
-                                addElicitSlotDirective: 'buildingname'
-                            }
-                            return allFuctions.formSpeech(handlerInput, obj);
-                        }
-                    } else {
-                        var speechText = 'I could not find any contact details.';
-                            obj = {
-                                speechText: speechText + ' ' + allFuctions.repromptSpeechText,
-                                displayText: speechText + ' ' + allFuctions.repromptSpeechText,
-                                repromptSpeechText: allFuctions.listenspeech,
-                                sessionEnd: false
-                            }
-                        return allFuctions.formSpeech(handlerInput, obj);                        
-                    }
-                }).catch((err) => {
-                    console.log('ContactInfo Error::', err);
-                    var speechText = 'I could not find any contact details.';
-                    obj = {
-                        speechText: speechText + ' ' + allFuctions.repromptSpeechText,
-                        displayText: speechText + ' ' + allFuctions.repromptSpeechText,
-                        repromptSpeechText: allFuctions.listenspeech,
-                        sessionEnd: false
-                    }
-                    return allFuctions.formSpeech(handlerInput, obj);       
-                })
-            } else {
+                var slots = [buildingname, contacttype];
+                return allFuctions.contactInfoFn(handlerInput, slots).then((res) => {
+                    return res;
+                });
+            } else if(personname){     //if personname exist
+                console.log('personname is ', personname);
+                var slots = [personname, contacttype];
+                return allFuctions.contactInfoFn(handlerInput, slots).then((res) => {
+                    return res;
+                });
+            } else {                
                 speechText = 'Whose contact details or which office information you are looking for?'
                 obj = {
                     speechText: speechText,
